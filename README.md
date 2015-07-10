@@ -25,24 +25,24 @@ Or install it yourself as:
 
 ## Usage
 
-require 'rubygems'
-require 'dromelib'
-include Dromelib
+    require 'rubygems'
+    require 'dromelib'
+    include Dromelib
 
-> GMail.configured?
-=> true
-> GMail.username
-=> 'fernan.dogs'
-> GMail.from
-=> 'movildenando@gmail.com'
-> GMail.unread_count
-=> 4
-> GMail.subject_prefix
-=> 'Dromo'
-> GMail.import! # Returns imported auidos
-=> ['PACA', 'DORA', 'TrabajosRails.com']
-> GMail.unread_count
-=> 0
+    > GMail.configured?
+    => true
+    > GMail.username
+    => 'fernan.dogs'
+    > GMail.from
+    => 'movildenando@gmail.com'
+    > GMail.unread_count
+    => 4
+    > GMail.subject_prefix
+    => 'Dromo'
+    > GMail.import! # Returns imported auidos
+    => ['PACA', 'DORA', 'TrabajosRails.com']
+    > GMail.unread_count
+    => 0
 
 
 ## Contributing
