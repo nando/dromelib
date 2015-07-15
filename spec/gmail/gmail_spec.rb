@@ -14,8 +14,7 @@ describe Dromelib::GMail do
     {
       'gmail' => {
         'username' => 'fernando.gs',
-        'password' => 'human-barking!',
-        'from' => 'my.cellphone.email@gmail.com'
+        'password' => 'human-barking!'
       }
     }
   }
@@ -38,7 +37,9 @@ describe Dromelib::GMail do
 
   describe '.from singleton method' do
     it '.from should return the email we have in .dromelib.yml' do
-      YAML.stub(:load_file, yaml_content) do
+      yaml = yaml_content
+      yaml['gmail']['from'] = 'my.cellphone.email@gmail.com'
+      YAML.stub(:load_file, yaml) do
         Dromelib::GMail.from.must_equal yaml_content['gmail']['from']
       end
     end
@@ -112,6 +113,24 @@ describe Dromelib::GMail do
             Dromelib::GMail.unread_count
           end
         }.must_raise Dromelib::GMail::MissingCredentialsError
+      end
+    end
+
+    it 'should return all unread emails count if .from is not set' do
+      ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_FROM: nil}) do
+        YAML.stub(:load_file, yaml_content) do
+          unread_count = rand(9999)
+          gmail = Minitest::Mock.new
+          inbox = Minitest::Mock.new
+          Gmail.stub(:connect, gmail) do
+            gmail.expect(:inbox, inbox)
+            inbox.expect(:count, unread_count, [:unread, {from: nil}])
+            gmail.expect(:logout, true)
+            Dromelib::GMail.unread_count.must_equal unread_count
+          end
+          gmail.verify
+          inbox.verify
+        end
       end
     end
   end
