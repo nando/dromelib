@@ -1,5 +1,4 @@
 # Copyright 2015 The Cocktail Experience, S.L.
-require 'yaml'
 require 'gmail'
 require 'rfc2047'
 require_relative '../dromelib'
@@ -12,19 +11,19 @@ module Dromelib
     extend self
 
     def username
-      ENV['DROMELIB_GMAIL_USERNAME'] || YAML.load_file('.dromelib.yml')['gmail']['username']
+      ENV['DROMELIB_GMAIL_USERNAME'] || Dromelib::Config.gmail.username
     end
 
     def password
-      ENV['DROMELIB_GMAIL_PASSWORD'] || YAML.load_file('.dromelib.yml')['gmail']['password']
+      ENV['DROMELIB_GMAIL_PASSWORD'] || Dromelib::Config.gmail.password
     end
 
     def from
-      ENV['DROMELIB_GMAIL_FROM'] || YAML.load_file('.dromelib.yml')['gmail']['from']
+      ENV['DROMELIB_GMAIL_FROM'] || Dromelib::Config.gmail.from
     end
 
     def subject_prefix
-      ENV['DROMELIB_GMAIL_PREFIX'] || YAML.load_file('.dromelib.yml')['gmail']['subject_prefix']
+      ENV['DROMELIB_GMAIL_PREFIX'] || Dromelib::Config.gmail.subject_prefix
     end
 
     def configured?
@@ -34,7 +33,7 @@ module Dromelib
     def unread_count
       if configured?
         gmail = Gmail.connect(username, password)
-        unreads = gmail.inbox.count(:unread, :from => Dromelib::GMail.from)
+        unreads = gmail.inbox.count(:unread, :from => from)
         gmail.logout
         unreads
       else

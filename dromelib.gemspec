@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'climate_control'
+  spec.add_development_dependency 'minitest-reporters', '~> 1.0'
 end
