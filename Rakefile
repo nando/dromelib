@@ -42,5 +42,4 @@ Rake::TestTask.new(:spec) do |t|
   t.verbose = true
 end
 
-#task default: [:rubocop, :spec]
-task default: :spec
+task default: [:rubocop, :spec]
