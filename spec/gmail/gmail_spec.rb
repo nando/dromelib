@@ -166,7 +166,7 @@ describe Dromelib::GMail do
             unread_count = rand(9999)
             gmail = Minitest::Mock.new
             inbox = Minitest::Mock.new
-            Gmail.stub(:connect, gmail) do
+            Gmail.stub(:connect!, gmail) do
               gmail.expect(:inbox, inbox)
               inbox.expect(:count, unread_count, [:unread, {from: nil}])
               gmail.expect(:logout, true)

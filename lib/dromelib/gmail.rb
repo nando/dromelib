@@ -32,7 +32,7 @@ module Dromelib
 
     def unread_count
       if configured?
-        gmail = Gmail.connect(username, password)
+        gmail = Gmail.connect!(username, password)
         unreads = gmail.inbox.count(:unread, :from => from)
         gmail.logout
         unreads
@@ -54,7 +54,7 @@ module Dromelib
 
     def import!
       if configured?
-        gmail = Gmail.connect(username, password)
+        gmail = Gmail.connect!(username, password)
         gmail.inbox.find(:unread, :from => Dromelib::GMail.from).each do |email|
           puts "=> '#{email.subject}'"
           if tuit = Dromelib::GMail.extract_auido_from_email_subject(email.subject)
