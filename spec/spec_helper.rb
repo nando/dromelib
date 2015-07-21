@@ -6,7 +6,7 @@ require 'minitest/autorun'
 require 'climate_control'
 
 require 'minitest/reporters'
-Minitest::Reporters.use! [Minitest::Reporters::SpecReporter.new]
+Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new]
 
 class Dromelib::Minitest
   @@config_sections = {}
