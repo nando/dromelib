@@ -21,13 +21,13 @@ describe Dromelib::GMail do
   }
 
   let(:yaml) {
-    {
-      'gmail' => {
-        'username' => 'colgado',
-        'password' => 'barking!',
-        'from' => 'my.cellphone.email@gmail.com'
-      }
-    }
+    Dromelib::Minitest.sections_hash
+    #{
+    #  'gmail' => {
+    #    'username' => 'colgado',
+    #    'password' => 'barking!',
+    #  }
+    #}
   }
 
   describe 'instance methods' do

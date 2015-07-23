@@ -13,22 +13,22 @@ module Dromelib
 
     def username
       init_required!
-      ENV['GMAIL_USERNAME'] || Dromelib::Config.gmail.username
+      Dromelib::Env.value_for(:gmail_username) || Dromelib::Config.gmail.username
     end
 
     def password
       init_required!
-      ENV['GMAIL_PASSWORD'] || Dromelib::Config.gmail.password
+      Dromelib::Env.value_for(:gmail_password) || Dromelib::Config.gmail.password
     end
 
     def from
       init_required!
-      ENV['GMAIL_FROM'] || Dromelib::Config.gmail.from
+      Dromelib::Env.value_for(:gmail_from) || Dromelib::Config.gmail.from
     end
 
     def subject_prefix
       init_required!
-      ENV['GMAIL_PREFIX'] || Dromelib::Config.gmail.subject_prefix
+      Dromelib::Env.value_for(:gmail_prefix) || Dromelib::Config.gmail.subject_prefix
     end
 
     def configured?

@@ -39,9 +39,12 @@ module Dromelib
       @@yaml = nil
     end
 
+    def gem_yaml
+      @@gem_yaml ||= YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
+    end
+
     def yaml
       return @@yaml unless @@yaml.nil?
-      gem_yaml = YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
       lokal = local_yaml
       gem_yaml.each_key do |key|
         gem_yaml[key] ||= {}

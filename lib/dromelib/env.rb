@@ -8,11 +8,12 @@ module Dromelib
     extend self
 
     def name_for(variable)
+      raise Dromelib::UninitializedError unless Dromelib.initialized?
       Dromelib::Config.environment_vars.send(variable)
     end
 
     def value_for(variable)
-      ENV[name_for(variable)]
+      (name = name_for(variable)) && ENV[name]
     end
   end
 end
