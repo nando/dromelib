@@ -2,17 +2,32 @@
 require_relative '../spec_helper'
 
 describe Dromelib::GMail do
+  let(:clean_environment) {
+    {
+      GMAIL_USERNAME: nil,
+      GMAIL_PASSWORD: nil,
+      GMAIL_FROM: nil,
+      GMAIL_PREFIX: nil
+    }
+  }
+
   let(:environment_vars) {
     {
-      DROMELIB_GMAIL_USERNAME: 'fernan.dogs',
-      DROMELIB_GMAIL_PASSWORD: 'guau!!! guau!!!',
-      DROMELIB_GMAIL_FROM: 'carer@doglovers.com',
-      DROMELIB_GMAIL_PREFIX: 'DROMO'
+      GMAIL_USERNAME: 'fernan.dogs',
+      GMAIL_PASSWORD: 'guau!!! guau!!!',
+      GMAIL_FROM: 'carer@doglovers.com',
+      GMAIL_PREFIX: 'DROMO'
     }
   }
 
   let(:yaml) {
-    {}
+    {
+      'gmail' => {
+        'username' => 'colgado',
+        'password' => 'barking!',
+        'from' => 'my.cellphone.email@gmail.com'
+      }
+    }
   }
 
   describe 'instance methods' do
@@ -26,35 +41,40 @@ describe Dromelib::GMail do
   end
 
   describe '.username & .password singleton methods' do
-    it 'should return the .dromelib.yml' do
-      skip
-      YAML.stub(:load_file, yaml) do
-        Dromelib::Config.load_yaml!
-        Dromelib::Config.stub(:gmail, OpenStruct.new(yaml['gmail'])) do
-          Dromelib::GMail.username.must_equal yaml['gmail']['username']
-          Dromelib::GMail.password.must_equal yaml['gmail']['password']
+    after do
+      Dromelib.end!
+    end
+
+    it 'should return its values in the .dromelib.yml if not in the environment' do
+      ClimateControl.modify clean_environment do
+        YAML.stub(:load_file, yaml) do
+          Dromelib.init!
+          Dromelib::Config.stub(:gmail, OpenStruct.new(yaml['gmail'])) do
+            Dromelib::GMail.username.must_equal yaml['gmail']['username']
+            Dromelib::GMail.password.must_equal yaml['gmail']['password']
+          end
         end
       end
     end
   
     it 'should check first the environment variables' do
-      skip
       ClimateControl.modify environment_vars do
-        Dromelib::GMail.username.must_equal environment_vars[:DROMELIB_GMAIL_USERNAME]
-        Dromelib::GMail.password.must_equal environment_vars[:DROMELIB_GMAIL_PASSWORD]
+        Dromelib.init!
+        Dromelib::GMail.username.must_equal environment_vars[:GMAIL_USERNAME]
+        Dromelib::GMail.password.must_equal environment_vars[:GMAIL_PASSWORD]
       end
     end
   end
 
   describe '.from singleton method' do
-    it 'should return the email in DROMELIB_GMAIL_FROM env. var. if defined' do
+    it 'should return the email in GMAIL_FROM env. var. if defined' do
       skip
       ClimateControl.modify environment_vars do
-        Dromelib::GMail.from.must_equal environment_vars[:DROMELIB_GMAIL_FROM]
+        Dromelib::GMail.from.must_equal environment_vars[:GMAIL_FROM]
       end
     end
 
-    it 'should read the Config value if no DROMELIB_GMAIL_FROM env. var.' do
+    it 'should read the Config value if no GMAIL_FROM env. var.' do
       skip
       YAML.stub(:load_file, yaml) do
         Dromelib::Config.load_yaml!
@@ -71,7 +91,7 @@ describe Dromelib::GMail do
       skip
       YAML.stub(:load_file, yaml) do
         Dromelib::Config.load_yaml!
-        ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_FROM: nil}) do
+        ClimateControl.modify environment_vars.merge({GMAIL_FROM: nil}) do
           assert Dromelib::GMail.configured?,
                  '.username and .password should be enough to be configured'
         end
@@ -84,7 +104,7 @@ describe Dromelib::GMail do
       yaml_content['gmail']['username'] = nil
       YAML.stub(:load_file, yaml_content) do
         Dromelib::Config.load_yaml!
-        ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_USERNAME: nil}) do
+        ClimateControl.modify environment_vars.merge({GMAIL_USERNAME: nil}) do
           Dromelib::Config.stub(:gmail, OpenStruct.new({})) do
             refute Dromelib::GMail.configured?
           end
@@ -92,39 +112,39 @@ describe Dromelib::GMail do
       end
     end
  
-    it 'should not be .configured? if DROMELIB_GMAIL_USERNAME is empty' do
+    it 'should not be .configured? if GMAIL_USERNAME is empty' do
       skip
       yaml_content = yaml
       yaml_content['gmail']['username'] = nil
       YAML.stub(:load_file, yaml_content) do
         Dromelib::Config.load_yaml!
-        ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_USERNAME: ''}) do
+        ClimateControl.modify environment_vars.merge({GMAIL_USERNAME: ''}) do
           refute Dromelib::GMail.configured?
         end
       end
     end
   
-    it 'should not be configured if DROMELIB_GMAIL_PASSWORD does not exist' do
+    it 'should not be configured if GMAIL_PASSWORD does not exist' do
       skip
       yaml_content = yaml
       yaml_content['gmail']['password'] = nil
       YAML.stub(:load_file, yaml_content) do
         Dromelib::Config.load_yaml!
         Dromelib::Config.stub(:gmail, OpenStruct.new({password: nil})) do
-          ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_PASSWORD: nil}) do
+          ClimateControl.modify environment_vars.merge({GMAIL_PASSWORD: nil}) do
             refute Dromelib::GMail.configured?
           end
         end
       end
     end
   
-    it 'should not be configured if DROMELIB_GMAIL_PASSWORD is empty' do
+    it 'should not be configured if GMAIL_PASSWORD is empty' do
       skip
       yaml_content = yaml
       yaml_content['gmail']['password'] = nil
       YAML.stub(:load_file, yaml_content) do
         Dromelib::Config.load_yaml!
-        ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_PASSWORD: ''}) do
+        ClimateControl.modify environment_vars.merge({GMAIL_PASSWORD: ''}) do
           refute Dromelib::GMail.configured?
         end
       end
@@ -132,14 +152,14 @@ describe Dromelib::GMail do
   end
 
   describe '.subject_prefix' do
-    it 'should return the DROMELIB_GMAIL_PREFIX env. var.' do
+    it 'should return the GMAIL_PREFIX env. var.' do
       skip
       ClimateControl.modify environment_vars do
-        Dromelib::GMail.subject_prefix.must_equal environment_vars[:DROMELIB_GMAIL_PREFIX]
+        Dromelib::GMail.subject_prefix.must_equal environment_vars[:GMAIL_PREFIX]
       end
     end
 
-    it 'should return the string we have in .dromelib.yml (no DROMELIB_GMAIL_PREFIX)' do
+    it 'should return the string we have in .dromelib.yml (no GMAIL_PREFIX)' do
       skip
       yaml_content = yaml
       yaml_content['gmail']['username'] = nil
@@ -160,7 +180,7 @@ describe Dromelib::GMail do
       yaml_content['gmail']['username'] = nil
       YAML.stub(:load_file, yaml_content) do
         Dromelib::Config.load_yaml!
-        ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_PASSWORD: nil}) do
+        ClimateControl.modify environment_vars.merge({GMAIL_PASSWORD: nil}) do
           proc {
             Dromelib::Config.stub(:gmail, OpenStruct.new({password: nil})) do
               Dromelib::GMail.unread_count
@@ -174,7 +194,7 @@ describe Dromelib::GMail do
       skip
       YAML.stub(:load_file, yaml) do
         Dromelib::Config.load_yaml!
-        ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_FROM: nil}) do
+        ClimateControl.modify environment_vars.merge({GMAIL_FROM: nil}) do
           Dromelib::Config.stub(:gmail, OpenStruct.new({from: nil})) do
             unread_count = rand(9999)
             gmail = Minitest::Mock.new
@@ -203,7 +223,7 @@ describe Dromelib::GMail do
         # Let's check some common invalid values...
         [nil, '', 'wadus', '@wadus', 'wadus@'].each do |invalid_from|
           proc {
-            ClimateControl.modify environment_vars.merge({DROMELIB_GMAIL_FROM: invalid_from}) do
+            ClimateControl.modify environment_vars.merge({GMAIL_FROM: invalid_from}) do
               Dromelib::Config.stub(:gmail, OpenStruct.new({from: invalid_from})) do
                 Dromelib::GMail.import!
               end
