@@ -7,38 +7,72 @@ module Dromelib
   # Module to import auidos reading emails
   module GMail
     class MissingCredentialsError < StandardError; end
+    class MissingFromError < StandardError; end
 
     extend self
 
     def username
+      init_required!
       ENV['DROMELIB_GMAIL_USERNAME'] || Dromelib::Config.gmail.username
     end
 
     def password
+      init_required!
       ENV['DROMELIB_GMAIL_PASSWORD'] || Dromelib::Config.gmail.password
     end
 
     def from
+      init_required!
       ENV['DROMELIB_GMAIL_FROM'] || Dromelib::Config.gmail.from
     end
 
     def subject_prefix
+      init_required!
       ENV['DROMELIB_GMAIL_PREFIX'] || Dromelib::Config.gmail.subject_prefix
     end
 
     def configured?
+      init_required!
       (username && password && !username.empty? && !password.empty?) || false
     end
 
     def unread_count
-      if configured?
-        gmail = Gmail.connect!(username, password)
-        unreads = gmail.inbox.count(:unread, :from => from)
-        gmail.logout
-        unreads
-      else
-        raise MissingCredentialsError 
+      init_required!
+      raise MissingCredentialsError unless configured?
+
+      gmail = Gmail.connect!(username, password)
+      count = gmail.inbox.count(:unread, :from => from)
+      gmail.logout
+      return count
+    end
+
+    def import!
+      init_required!
+      raise MissingCredentialsError,
+            'Credentials not present neither env. nor Yaml' unless configured?
+      raise MissingFromError,
+            'Required to import only emails from there' unless valid_from?
+
+      gmail = Gmail.connect!(username, password)
+      gmail.inbox.find(:unread, :from => from).each do |email|
+        puts "=> '#{email.subject}'"
+        if tuit = extract_auido_from_email_subject(email.subject)
+          puts ' Importing: ' + tuit
+          sleep 1
+          #  email.read!
+        end
       end
+      gmail.logout
+    end
+
+    private
+
+    def init_required!
+      raise Dromelib::UninitializedError unless Dromelib.initialized?
+    end
+
+    def valid_from?
+      !from.nil? && !(from =~ /.+@.+/).nil?
     end
 
     def extract_auido_from_email_subject(subject)
@@ -49,23 +83,6 @@ module Dromelib
         end
       else
         decoded
-      end
-    end
-
-    def import!
-      if configured?
-        gmail = Gmail.connect!(username, password)
-        gmail.inbox.find(:unread, :from => Dromelib::GMail.from).each do |email|
-          puts "=> '#{email.subject}'"
-          if tuit = Dromelib::GMail.extract_auido_from_email_subject(email.subject)
-            puts 'tuiting: ' + tuit
-            sleep 1
-            #  email.read!
-          end
-        end
-        gmail.logout
-      else
-        raise MissingCredentialsError 
       end
     end
   end
