@@ -7,62 +7,55 @@ module Dromelib
   module Config
     extend self
 
+    attr_reader :sections, :gem_yaml
+
+    @sections = %w{
+      app
+      environment_vars
+      gmail
+    }
+
+    @gem_yaml = begin
+      @sections.inject({}) do |hash, section|
+        hash[section] = {}
+        hash
+      end.merge \
+        YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
+    end
+
+    def local_yaml
+      @local_yaml ||= YAML.load_file('.dromelib.yml').select {|k, v| @sections.include? k}
+    rescue Errno::ENOENT
+      {}
+    end
+
     # .load_yaml! defines a method for each .dromelib.yml's section that returns its
     # content into a memoized OpenStruct.
-    #
-    # Manually it'd be:
-    #   def environment_vars
-    #      @@gmail ||= OpenStruct.new(yaml['gmail'])
-    #   end
-    #
-    # And metaprogramming using the real .dromelib.yml keys:
     def load_yaml!
-      @@yaml = nil
       yaml.each do |key, value|
-        instance_eval {
-          instance_variable_set "@#{key}", OpenStruct.new(value)
-          define_method key do
-            instance_variable_get "@#{key}"
-          end
-        }
+        instance_variable_set :"@#{key}", OpenStruct.new(value)
+        define_method key do
+          instance_variable_get :"@#{key}"
+        end
       end
     end
 
     # Method to simplify things testing memoization
     def remove_yaml!
-      yaml.each do |key, value|
-        instance_eval {
-          remove_instance_variable "@#{key}"
-          undef_method key
-        }
+      if instance_variables.include?(:@yaml)
+        @yaml.each do |key, value|
+          if respond_to?(key)
+            remove_instance_variable :"@#{key}"
+            undef_method key
+          end
+        end
+        remove_instance_variable :@yaml
       end
-      @@yaml = nil
-    end
-
-    def gem_yaml
-      @@gem_yaml ||= YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
+      remove_instance_variable :@local_yaml if instance_variables.include?(:@local_yaml)
     end
 
     def yaml
-      return @@yaml unless @@yaml.nil?
-      lokal = local_yaml
-      gem_yaml.each_key do |key|
-        gem_yaml[key] ||= {}
-        if lokal[key]
-          gem_yaml[key].merge! lokal[key]
-        end
-      end
-      @@yaml = gem_yaml
-    rescue Errno::ENOENT
-      {}
-    end
-
-    private
-
-    def local_yaml
-      YAML.load_file('.dromelib.yml')
-    rescue Errno::ENOENT
-      {}
+      @yaml ||= gem_yaml.merge(local_yaml)
     end
   end
 end

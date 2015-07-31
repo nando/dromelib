@@ -1,10 +1,10 @@
-app:
-  # name: MyDromesApp
+# app:
+#   name: RailsOnDrome
 environment_vars:
   gmail_username: GMAIL_USERNAME
   gmail_password: GMAIL_PASSWORD
   gmail_from: GMAIL_FROM
-  gmail_prefix: GMAIL_PREFIX
+  gmail_subject_prefix: GMAIL_SUBJECT_PREFIX
   stream_actor: STREAM_ACTOR
   stream_key: STREAM_KEY
   stream_secret: STREAM_SECRET
@@ -13,8 +13,8 @@ environment_vars:
   neo4j_server: NEO4J_SERVER
   neo4j_username: NEO4J_USERNAME
   neo4j_password: NEO4J_PASSWORD
-gmail:
-  # username: nando
-  # password: odnan
-  # from: myselfhone@example.com
-  # subject_prefix: dromo
+# gmail:
+#   username: nando
+#   password: odnan
+#   from: myselfhone@example.com,mysecretemail@justjok.in
+#   subject_prefix: dromo

@@ -2,6 +2,10 @@
 require_relative '../spec_helper'
 
 describe Dromelib::Env do
+  after do
+    Dromelib.end!
+  end
+
   let(:clean_environment) {
     {
       stream_actor: nil,
@@ -36,10 +40,6 @@ describe Dromelib::Env do
       }
     }
   }
-
-  after do
-    Dromelib.end!
-  end
 
   describe '.name_for' do
     it 'should use the default name on a clean environment' do

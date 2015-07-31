@@ -28,7 +28,7 @@ module Dromelib
 
     def subject_prefix
       init_required!
-      Dromelib::Env.value_for(:gmail_prefix) || Dromelib::Config.gmail.subject_prefix
+      Dromelib::Env.value_for(:gmail_subject_prefix) || Dromelib::Config.gmail.subject_prefix
     end
 
     def configured?

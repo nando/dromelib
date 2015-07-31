@@ -26,7 +26,7 @@ module Dromelib
   extend self
 
   @@initialized = false
-  
+ 
   def init!
     Config.load_yaml!
     @@initialized = true

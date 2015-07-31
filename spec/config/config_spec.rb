@@ -2,36 +2,106 @@
 require_relative '../spec_helper'
 
 describe Dromelib::Config do
-  let(:yaml_content) {
-    {}
-  }
-
-  it 'should define a method for each .dromelib.yml section (1st level key)' do
-    skip
-    YAML.stub(:load_file, yaml_content) do
-      Dromelib::Config.load_yaml!
-      assert Dromelib::Config.respond_to?(:app)
-      assert Dromelib::Config.respond_to?(:environment_vars)
-    end
+  after do
+    Dromelib.end! # Needed to clean the memoized stuff
   end
 
-  describe '.yaml singleton method' do
-    it 'should return the .dromelib.yml hash' do
-      skip
-      YAML.stub(:load_file, yaml_content) do
-        Dromelib::Config.load_yaml!
-        Dromelib::Config.yaml.must_equal yaml_content
+  # Partial content of the initial .dromelib.yml bundled with the gem:
+  #     environment_vars:
+  #       stream_actor: STREAM_ACTOR
+  #     [...]
+  let(:gem_yaml) {
+    YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
+  }
+
+  let(:stubbed_yaml) {
+    {
+      'app' => {
+        'name' => 'DromeOnRails'
+      },
+      'environment_vars' => {
+        'stream_actor' => 'CUSTOM_ENV_VAR',
+        'not_in_gem' => 'FOOBAR'
+      },
+      'not_in_gem' => {
+        'values' => 'IGNORED'
+      }
+    }
+  }
+
+  describe 'the gem .dromelib.yml' do
+    it 'should have only the sections defined by the class' do
+      gem_yaml.each_key do |yaml_section|
+        Dromelib::Config.sections.must_include yaml_section
       end
     end
   end
 
-  describe 'each dinamically defined method' do
-    it 'should return an OpenStruct w/ the keys&values defined in the yaml' do
-      skip
-      YAML.stub(:load_file, yaml_content) do
+  describe '.gem_yaml class method' do
+    it 'should return a hash whose keys are the sections defined by the class' do 
+      Dromelib::Config.gem_yaml.keys.sort.must_equal Dromelib::Config.sections.sort
+    end
+
+    it 'should return the gem .dromelib.yml contents' do
+      gem_yaml.each do |section, config|
+        Dromelib::Config.gem_yaml[section].must_equal config
+      end
+    end
+  end
+
+  describe '.local_yaml class method' do
+    it 'should return only the local .dromelib.yml sections defined by the class' do
+      YAML.stub(:load_file, stubbed_yaml) do
+        stubbed_yaml.each do |section, config|
+          if Dromelib::Config.sections.include? section
+            Dromelib::Config.local_yaml.keys.must_include section
+          else
+            Dromelib::Config.local_yaml.keys.wont_include section
+          end
+        end
+      end
+    end
+
+    it 'should return the config values defined into the local .dromelib.yml' do
+      YAML.stub(:load_file, stubbed_yaml) do
+        Dromelib::Config.local_yaml.each do |section, config|
+          config.must_equal stubbed_yaml[section]
+        end
+      end
+    end
+  end
+
+  describe '.yaml' do
+    it 'should have only the sections defined by the class' do
+      YAML.stub(:load_file, stubbed_yaml) do
+        Dromelib::Config.yaml.keys.sort.must_equal Dromelib::Config.sections.sort
+      end
+    end
+
+    it '.local_yaml should overwrite .gem_yaml values' do
+      YAML.stub(:load_file, stubbed_yaml) do
+        Dromelib::Config.yaml.each do |section, config|
+          if Dromelib::Config.local_yaml.keys.include?(section)
+            config.must_equal stubbed_yaml[section]
+          else
+            config.must_equal Dromelib::Config.gem_yaml[section]
+          end
+        end
+      end
+    end
+  end
+
+  describe '.load_yaml!' do
+    it 'should define a method for each .yaml section that returns an OpenStruct with its content' do
+      YAML.stub(:load_file, stubbed_yaml) do
         Dromelib::Config.load_yaml!
-        Dromelib::Config.app.class.must_equal OpenStruct
-        Dromelib::Config.app.name.must_equal yaml_content['app']['name']
+        Dromelib::Config.yaml.each_key do |section|
+          os = Dromelib::Config.send(section)
+          os.class.must_equal OpenStruct
+          Dromelib::Config.yaml[section].each do |key, value|
+            os.send(key).must_equal value
+          end
+        end
       end
     end
   end

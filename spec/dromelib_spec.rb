@@ -4,10 +4,10 @@ require_relative 'spec_helper'
 describe Dromelib do
   describe 'initialization' do
     after do
-      Dromelib.end! if Dromelib.initialized?
+      Dromelib.end!
     end
 
-    it 'should be uninitialized after being just loaded' do
+    it 'should not be initialized just requiring the library' do
       refute Dromelib.initialized?
     end
 
