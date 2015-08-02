@@ -1,0 +1,21 @@
+Everything!!! :)
+
+But for now it will be very apreciated if someone help me to remove this
+offenses to the RoboCop:
+
+lib/dromelib/gmail.rb:12:5: C: Use module_function instead of extend self.
+    extend self
+    ^^^^^^^^^^^
+lib/dromelib/config.rb:9:5: C: Use module_function instead of extend self.
+    extend self
+    ^^^^^^^^^^^
+
+14 files inspected, 2 offenses detected
+RuboCop failed!
+
+I've implemented Dromelib::Config as a singleton object in a module as Gregory
+Brown says in its awesome Uses for Modules series[0]
+
+Thanks in advance!
+-- nando
+[0] https://practicingruby.com/articles/uses-for-modules-1

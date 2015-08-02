@@ -38,7 +38,7 @@ module Dromelib
 
     def unread_count
       init_required!
-      raise MissingCredentialsError unless configured?
+      fail MissingCredentialsError unless configured?
 
       gmail = Gmail.connect!(username, password)
       count = gmail.inbox.count(:unread, :from => from)
@@ -48,15 +48,15 @@ module Dromelib
 
     def import!
       init_required!
-      raise MissingCredentialsError,
-            'Credentials not present neither env. nor Yaml' unless configured?
-      raise MissingFromError,
-            'Required to import only emails from there' unless valid_from?
+      fail MissingCredentialsError,
+           'Credentials not present neither env. nor Yaml' unless configured?
+      fail MissingFromError,
+           'Required to import only emails from there' unless valid_from?
 
       gmail = Gmail.connect!(username, password)
-      gmail.inbox.find(:unread, :from => from).each do |email|
+      gmail.inbox.find(:unread, from: from).each do |email|
         puts "=> '#{email.subject}'"
-        if tuit = extract_auido_from_email_subject(email.subject)
+        if (tuit = extract_auido_from_email_subject(email.subject))
           puts ' Importing: ' + tuit
           sleep 1
           #  email.read!
@@ -68,7 +68,7 @@ module Dromelib
     private
 
     def init_required!
-      raise Dromelib::UninitializedError unless Dromelib.initialized?
+      fail Dromelib::UninitializedError unless Dromelib.initialized?
     end
 
     def valid_from?
@@ -77,10 +77,8 @@ module Dromelib
 
     def extract_auido_from_email_subject(subject)
       decoded = Rfc2047.decode(subject).strip
-      if subject_prefix and subject_prefix.size > 0
-        if decoded =~ /^#{subject_prefix} (.+)$/i
-          Regexp.last_match 1
-        end
+      if subject_prefix && (subject_prefix.size > 0)
+        decoded[/^#{subject_prefix} (.+)$/i, 1]
       else
         decoded
       end

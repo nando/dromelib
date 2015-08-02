@@ -23,7 +23,7 @@ require_relative 'dromelib/gmail'
 module Dromelib
   class UninitializedError < StandardError; end
 
-  extend self
+  module_function
 
   @@initialized = false
  

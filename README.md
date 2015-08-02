@@ -57,11 +57,22 @@ So, be sure the specs test what you've read in the README if that fails.
 
 ## Contributing
 
+Way to go:
+
 1. Fork it ( https://github.com/[my-github-username]/dromelib/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+Having in mind always that:
+
+1. ´´rake´´ should never complain
+2. Tests/specs are always welcome
+
+## TODO
+
+There's a TODO file!!! Thanks.
 
 ## License
 

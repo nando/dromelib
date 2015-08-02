@@ -92,7 +92,7 @@ describe Dromelib::Config do
   end
 
   describe '.load_yaml!' do
-    it 'should define a method for each .yaml section that returns an OpenStruct with its content' do
+    it 'should define a method for each section returning an OpenStruct w/ its config' do
       YAML.stub(:load_file, stubbed_yaml) do
         Dromelib::Config.load_yaml!
         Dromelib::Config.yaml.each_key do |section|

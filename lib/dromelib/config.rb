@@ -4,27 +4,25 @@ require 'ostruct'
 require_relative '../dromelib'
 
 module Dromelib
+  # Merges the local .dromelib.yml with the gem defaults
   module Config
     extend self
 
     attr_reader :sections, :gem_yaml
 
-    @sections = %w{
+    @sections = %w(
       app
       environment_vars
       gmail
-    }
+    )
 
-    @gem_yaml = begin
-      @sections.inject({}) do |hash, section|
-        hash[section] = {}
-        hash
-      end.merge \
-        YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
-    end
+    @gem_yaml = @sections.each_with_object({}) do |section, hash|
+      hash[section] = {}
+    end.merge \
+      YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
 
     def local_yaml
-      @local_yaml ||= YAML.load_file('.dromelib.yml').select {|k, v| @sections.include? k}
+      @local_yaml ||= YAML.load_file('.dromelib.yml').select {|k, _v| @sections.include? k}
     rescue Errno::ENOENT
       {}
     end
@@ -43,7 +41,7 @@ module Dromelib
     # Method to simplify things testing memoization
     def remove_yaml!
       if instance_variables.include?(:@yaml)
-        @yaml.each do |key, value|
+        @yaml.each_key do |key|
           if respond_to?(key)
             remove_instance_variable :"@#{key}"
             undef_method key

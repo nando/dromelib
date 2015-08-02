@@ -5,10 +5,10 @@ module Dromelib
   # Allow us to change the name of the environment variables used by the
   # library through the .dromelib.yml file.
   module Env
-    extend self
+    module_function
 
     def name_for(variable)
-      raise Dromelib::UninitializedError unless Dromelib.initialized?
+      fail Dromelib::UninitializedError unless Dromelib.initialized?
       Dromelib::Config.environment_vars.send(variable)
     end
 
