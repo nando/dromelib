@@ -43,6 +43,7 @@ module Dromelib
       gmail = Gmail.connect!(username, password)
       count = gmail.inbox.count(:unread, :from => from)
       gmail.logout
+
       return count
     end
 
@@ -55,12 +56,11 @@ module Dromelib
 
       gmail = Gmail.connect!(username, password)
       gmail.inbox.find(:unread, from: from).each do |email|
-        puts "=> '#{email.subject}'"
-        if (tuit = extract_auido_from_email_subject(email.subject))
-          puts ' Importing: ' + tuit
-          sleep 1
-          #  email.read!
-        end
+        #if (tuit = extract_auido_from_email_subject(email.subject))
+        #  puts ' Importing: ' + tuit
+        email.read!
+        #end
+        #sleep 1
       end
       gmail.logout
     end

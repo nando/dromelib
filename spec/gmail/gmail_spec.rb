@@ -140,6 +140,10 @@ describe Dromelib::GMail do
   end
 
   describe 'credentials required methods' do
+    let(:gmail) { Minitest::Mock.new } # => Gmail.connect!(username, password)
+    let(:inbox) { Minitest::Mock.new } # => gmail.inbox
+    let(:email) { Minitest::Mock.new } # => inbox.find([...]).first
+
     [:unread_count, :import!].each do |method|
       it 'should raise MissingCredentialsError if not configured' do  
         YAML.stub(:load_file, {}) do
@@ -155,10 +159,9 @@ describe Dromelib::GMail do
     end
 
     describe '.unread_count' do
+      let(:unread_count) { rand(9999) }
+
       it 'should return all unread emails count if .from is not set' do
-        unread_count = rand(9999)
-        gmail = Minitest::Mock.new
-        inbox = Minitest::Mock.new
   
         YAML.stub(:load_file, yaml_content) do
           Dromelib.init!
@@ -182,10 +185,26 @@ describe Dromelib::GMail do
         YAML.stub(:load_file, {}) do
           ClimateControl.modify environment_vars.merge({GMAIL_FROM: 'invalid@email'}) do
             proc {
-              Dromelib.end! if Dromelib.initialized?
               Dromelib.init!
               Dromelib::GMail.import!
             }.must_raise Dromelib::GMail::MissingFromError
+          end
+        end
+      end
+
+      it 'should call its .read! method after reading an email' do
+        from = 'valid@email.es'
+        YAML.stub(:load_file, {}) do
+          ClimateControl.modify environment_vars.merge({GMAIL_FROM: from}) do
+            Dromelib.init!
+            Gmail.stub(:connect!, gmail) do
+              gmail.expect(:inbox, inbox)
+              inbox.expect(:find, [email], [:unread, {from: from}])
+              email.expect(:read!, false)
+              gmail.expect(:logout, true)
+
+              Dromelib::GMail.import!
+            end
           end
         end
       end
