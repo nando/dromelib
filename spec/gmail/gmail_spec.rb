@@ -156,8 +156,18 @@ describe Dromelib::GMail do
     end
   
     describe '.import!' do
-      it 'should raise MissingFromError if "from" has no/bad value' do  
-        skip
+      it 'should raise MissingFromError if "from" has no or wrong value' do  
+        [nil, '', 'wadus', '@wadus', 'wadus@'].each do |invalid_from|
+          YAML.stub(:load_file, {}) do
+            ClimateControl.modify environment_vars.merge({GMAIL_FROM: invalid_from}) do
+              proc {
+                Dromelib.end! if Dromelib.initialized?
+                Dromelib.init!
+                Dromelib::GMail.import!
+              }.must_raise Dromelib::GMail::MissingFromError
+            end
+          end
+        end
       end
     end
   end
