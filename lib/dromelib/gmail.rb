@@ -65,14 +65,14 @@ module Dromelib
       gmail.logout
     end
 
+    def valid_from?
+      !from.nil? && !(from =~ /.+@.+\..+/).nil?
+    end
+
     private
 
     def init_required!
       fail Dromelib::UninitializedError unless Dromelib.initialized?
-    end
-
-    def valid_from?
-      !from.nil? && !(from =~ /.+@.+/).nil?
     end
 
     def extract_auido_from_email_subject(subject)
