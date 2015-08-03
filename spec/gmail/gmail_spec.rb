@@ -131,25 +131,24 @@ describe Dromelib::GMail do
     end
 
     it 'should return all unread emails count if .from is not set' do
-      skip
-      #YAML.stub(:load_file, yaml) do
-      #  Dromelib::Config.load_yaml!
-      #  ClimateControl.modify environment_vars.merge({GMAIL_FROM: nil}) do
-      #    Dromelib::Config.stub(:gmail, OpenStruct.new({from: nil})) do
-      #      unread_count = rand(9999)
-      #      gmail = Minitest::Mock.new
-      #      inbox = Minitest::Mock.new
-      #      Gmail.stub(:connect!, gmail) do
-      #        gmail.expect(:inbox, inbox)
-      #        inbox.expect(:count, unread_count, [:unread, {from: nil}])
-      #        gmail.expect(:logout, true)
-      #        Dromelib::GMail.unread_count.must_equal unread_count
-      #      end
-      #      gmail.verify
-      #      inbox.verify
-      #    end
-      #  end
-      #end
+      unread_count = rand(9999)
+      gmail = Minitest::Mock.new
+      inbox = Minitest::Mock.new
+
+      YAML.stub(:load_file, yaml_content) do
+        Dromelib.init!
+        Gmail.stub(:connect!, gmail) do
+          gmail.expect(:inbox, inbox)
+          inbox.expect(:count, unread_count, [:unread, {from: nil}])
+          gmail.expect(:logout, true)
+          Dromelib::GMail.unread_count.must_equal unread_count
+        end
+
+        Dromelib::GMail.unread_count
+
+        gmail.verify
+        inbox.verify
+      end
     end
   end
 
