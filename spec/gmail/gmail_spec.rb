@@ -117,59 +117,48 @@ describe Dromelib::GMail do
     end
   end
 
-  describe '.unread_count' do
-    it 'should raise MissingCredentialsError if not configured' do  
-      YAML.stub(:load_file, {}) do
-        ClimateControl.modify clean_environment do
-          proc {
-            Dromelib.init!
-            refute Dromelib::GMail.configured?
-            Dromelib::GMail.unread_count
-          }.must_raise Dromelib::GMail::MissingCredentialsError
+  describe 'credentials required methods' do
+    [:unread_count, :import!].each do |method|
+      it 'should raise MissingCredentialsError if not configured' do  
+        YAML.stub(:load_file, {}) do
+          ClimateControl.modify clean_environment do
+            proc {
+              Dromelib.init!
+              refute Dromelib::GMail.configured?
+              Dromelib::GMail.send method
+            }.must_raise Dromelib::GMail::MissingCredentialsError
+          end
         end
       end
     end
 
-    it 'should return all unread emails count if .from is not set' do
-      unread_count = rand(9999)
-      gmail = Minitest::Mock.new
-      inbox = Minitest::Mock.new
-
-      YAML.stub(:load_file, yaml_content) do
-        Dromelib.init!
-        Gmail.stub(:connect!, gmail) do
-          gmail.expect(:inbox, inbox)
-          inbox.expect(:count, unread_count, [:unread, {from: nil}])
-          gmail.expect(:logout, true)
-          Dromelib::GMail.unread_count.must_equal unread_count
+    describe '.unread_count' do
+      it 'should return all unread emails count if .from is not set' do
+        unread_count = rand(9999)
+        gmail = Minitest::Mock.new
+        inbox = Minitest::Mock.new
+  
+        YAML.stub(:load_file, yaml_content) do
+          Dromelib.init!
+          Gmail.stub(:connect!, gmail) do
+            gmail.expect(:inbox, inbox)
+            inbox.expect(:count, unread_count, [:unread, {from: nil}])
+            gmail.expect(:logout, true)
+            Dromelib::GMail.unread_count.must_equal unread_count
+          end
+  
+          Dromelib::GMail.unread_count
+  
+          gmail.verify
+          inbox.verify
         end
-
-        Dromelib::GMail.unread_count
-
-        gmail.verify
-        inbox.verify
       end
     end
-  end
-
-  describe '.import!' do
-    it 'should raise MissingFromError if "from" has no value' do  
-      skip
-      #yaml_content = yaml
-      #yaml_content['gmail']['from'] = nil
-      #YAML.stub(:load_file, yaml_content) do
-      #  Dromelib::Config.load_yaml!
-      #  # Let's check some common invalid values...
-      #  [nil, '', 'wadus', '@wadus', 'wadus@'].each do |invalid_from|
-      #    proc {
-      #      ClimateControl.modify environment_vars.merge({GMAIL_FROM: invalid_from}) do
-      #        Dromelib::Config.stub(:gmail, OpenStruct.new({from: invalid_from})) do
-      #          Dromelib::GMail.import!
-      #        end
-      #      end
-      #    }.must_raise Dromelib::GMail::MissingFromError
-      #  end
-      #end
+  
+    describe '.import!' do
+      it 'should raise MissingFromError if "from" has no/bad value' do  
+        skip
+      end
     end
   end
 end
