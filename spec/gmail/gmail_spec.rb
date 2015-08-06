@@ -171,9 +171,6 @@ describe Dromelib::GMail do
             gmail.expect(:logout, true)
             Dromelib::GMail.unread_count.must_equal unread_count
           end
-  
-          Dromelib::GMail.unread_count
-  
           gmail.verify
           inbox.verify
         end
