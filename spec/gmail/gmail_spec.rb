@@ -195,6 +195,7 @@ describe Dromelib::GMail do
             Gmail.stub(:connect!, gmail) do
               gmail.expect(:inbox, inbox)
               inbox.expect(:find, [email], [:unread, {from: from}])
+              email.expect(:subject, 'drome entry')
               email.expect(:read!, false)
               gmail.expect(:logout, true)
 
