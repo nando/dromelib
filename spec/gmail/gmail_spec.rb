@@ -120,16 +120,14 @@ describe Dromelib::GMail do
   describe '.valid_from?' do
     it 'should be true for a valid email' do
       email = 'valid@email.org'
-
-          ClimateControl.modify environment_vars.merge({'GMAIL_FROM' => email}) do
-            Dromelib.init!
-            assert Dromelib::GMail.valid_from?
-          end
-
+      ClimateControl.modify environment_vars.merge({'GMAIL_FROM' => email}) do
+        Dromelib.init!
+        assert Dromelib::GMail.valid_from?
+      end
     end
 
     [nil, '', 'wadus', '@wadus', 'wadus@', 'wadus@es'].each do |invalid_from|
-      it "should be false for '#{invalid_from||'<nil>'}'" do
+      it "should be false for '#{invalid_from || '<nil>'}'" do
         ClimateControl.modify environment_vars.merge({'GMAIL_FROM' => invalid_from}) do
           Dromelib.init!
           refute Dromelib::GMail.valid_from?
