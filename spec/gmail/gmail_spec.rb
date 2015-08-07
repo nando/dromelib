@@ -6,47 +6,47 @@ describe Dromelib::GMail do
     Dromelib.end!
   end
 
-  let(:clean_environment) {
+  let(:clean_environment) do
     {
-      'GMAIL_USERNAME' => nil,
-      'GMAIL_PASSWORD' => nil,
-      'GMAIL_FROM' => nil,
-      'GMAIL_SUBJECT_PREFIX' => nil
+      'GMAIL_USERNAME': nil,
+      'GMAIL_PASSWORD': nil,
+      'GMAIL_FROM': nil,
+      'GMAIL_SUBJECT_PREFIX': nil
     }
-  }
+  end
 
-  let(:environment_vars) {
+  let(:environment_vars) do
     {
       'GMAIL_USERNAME' => 'fernan.dogs',
       'GMAIL_PASSWORD' => 'guau!!! guau!!!'
     }
-  }
+  end
 
-  let(:yaml_content) {
+  let(:yaml_content) do
     {
       'gmail' => {
         'username' => 'colgado',
         'password' => 'barking'
       }
     }
-  }
+  end
 
   describe 'instance methods' do
     it 'should raise UninitializedError unless Dromelib.init! has been called first' do
       Dromelib::GMail.instance_methods.each do |method| 
-        proc {
+        proc do
           Dromelib::GMail.send method
-        }.must_raise Dromelib::UninitializedError
+        end.must_raise Dromelib::UninitializedError
       end
     end
   end
 
-  %w{
+  %w(
     username
     password
     from
     subject_prefix
-  }.each do |method|
+  ).each do |method|
     describe ".#{method} singleton method" do
       it 'should return its value in .dromelib.yml if not present in the environment' do
         ClimateControl.modify clean_environment do
@@ -87,14 +87,14 @@ describe Dromelib::GMail do
       end
     end
  
-    %w{
+    %w(
       username
       password
-    }.each do |required_param|
+    ).each do |required_param|
       it "should be false if the #{required_param} is missing" do
         yaml = yaml_content
         yaml['gmail'][required_param] = nil
-        env = environment_vars.merge({"GMAIL_#{required_param.upcase}" => nil})
+        env = environment_vars.merge("GMAIL_#{required_param.upcase}": nil)
         YAML.stub(:load_file, yaml) do
           ClimateControl.modify env do
             Dromelib.init!
@@ -106,7 +106,7 @@ describe Dromelib::GMail do
       it "should be false if the #{required_param} is an empty string" do
         yaml = yaml_content
         yaml_content['gmail'][required_param] = ''
-        env = environment_vars.merge({"GMAIL_#{required_param.upcase}" => ''})
+        env = environment_vars.merge("GMAIL_#{required_param.upcase}": '')
         YAML.stub(:load_file, yaml) do
           ClimateControl.modify env do
             Dromelib.init!
@@ -120,7 +120,7 @@ describe Dromelib::GMail do
   describe '.valid_from?' do
     it 'should be true for a valid email' do
       email = 'valid@email.org'
-      ClimateControl.modify environment_vars.merge({'GMAIL_FROM' => email}) do
+      ClimateControl.modify environment_vars.merge('GMAIL_FROM': email) do
         Dromelib.init!
         assert Dromelib::GMail.valid_from?
       end
@@ -128,7 +128,7 @@ describe Dromelib::GMail do
 
     [nil, '', 'wadus', '@wadus', 'wadus@', 'wadus@es'].each do |invalid_from|
       it "should be false for '#{invalid_from || '<nil>'}'" do
-        ClimateControl.modify environment_vars.merge({'GMAIL_FROM' => invalid_from}) do
+        ClimateControl.modify environment_vars.merge('GMAIL_FROM': invalid_from) do
           Dromelib.init!
           refute Dromelib::GMail.valid_from?
           Dromelib.end!
@@ -146,11 +146,11 @@ describe Dromelib::GMail do
       it 'should raise MissingCredentialsError if not configured' do  
         YAML.stub(:load_file, {}) do
           ClimateControl.modify clean_environment do
-            proc {
+            proc do
               Dromelib.init!
               refute Dromelib::GMail.configured?
               Dromelib::GMail.send method
-            }.must_raise Dromelib::GMail::MissingCredentialsError
+            end.must_raise Dromelib::GMail::MissingCredentialsError
           end
         end
       end
@@ -178,11 +178,11 @@ describe Dromelib::GMail do
     describe '.import!' do
       it 'should raise MissingFromError if "from" is not valid' do  
         YAML.stub(:load_file, {}) do
-          ClimateControl.modify environment_vars.merge({GMAIL_FROM: 'invalid@email'}) do
-            proc {
+          ClimateControl.modify environment_vars.merge('GMAIL_FROM': 'invalid@email') do
+            proc do
               Dromelib.init!
               Dromelib::GMail.import!
-            }.must_raise Dromelib::GMail::MissingFromError
+            end.must_raise Dromelib::GMail::MissingFromError
           end
         end
       end
@@ -190,7 +190,7 @@ describe Dromelib::GMail do
       it 'should call its .read! method after reading an email' do
         from = 'valid@email.es'
         YAML.stub(:load_file, {}) do
-          ClimateControl.modify environment_vars.merge({GMAIL_FROM: from}) do
+          ClimateControl.modify environment_vars.merge('GMAIL_FROM': from) do
             Dromelib.init!
             Gmail.stub(:connect!, gmail) do
               gmail.expect(:inbox, inbox)

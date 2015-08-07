@@ -6,40 +6,40 @@ describe Dromelib::Env do
     Dromelib.end!
   end
 
-  let(:clean_environment) {
+  let(:clean_environment) do
     {
       stream_actor: nil,
       STREAM_ACTOR: nil,
       ACTIVITYSTREAM_ACTOR: nil
     }
-  }
+  end
 
-  let(:default_name) {
+  let(:default_name) do
     {
       stream_actor: 'STREAM_ACTOR'
     }
-  }
+  end
 
-  let(:custom_name) {
+  let(:custom_name) do
     {
       stream_actor: 'CUSTOM_ACTOR'
     }
-  }
+  end
 
-  let(:environment_values) {
+  let(:environment_values) do
     {
       STREAM_ACTOR: 'colgado',
       CUSTOM_ACTOR: 'colgado_es'
     }
-  }
+  end
 
-  let(:yaml_content) {
+  let(:yaml_content) do
     {
       'environment_vars' => {
         'stream_actor' => 'CUSTOM_ACTOR'
       }
     }
-  }
+  end
 
   describe '.name_for' do
     it 'should use the default name on a clean environment' do

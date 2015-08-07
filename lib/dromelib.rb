@@ -25,6 +25,7 @@ module Dromelib
 
   module_function
 
+  # rubocop:disable Style/ClassVars
   @@initialized = false
  
   def init!
@@ -40,4 +41,5 @@ module Dromelib
   def initialized?
     @@initialized
   end
+  # rubocop:enable Style/ClassVars
 end

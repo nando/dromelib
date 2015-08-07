@@ -10,11 +10,11 @@ describe Dromelib::Config do
   #     environment_vars:
   #       stream_actor: STREAM_ACTOR
   #     [...]
-  let(:gem_yaml) {
+  let(:gem_yaml) do
     YAML.load_file(File.dirname(__FILE__) + '/../../.dromelib.yml')
-  }
+  end
 
-  let(:stubbed_yaml) {
+  let(:stubbed_yaml) do
     {
       'app' => {
         'name' => 'DromeOnRails'
@@ -27,7 +27,7 @@ describe Dromelib::Config do
         'values' => 'IGNORED'
       }
     }
-  }
+  end
 
   describe 'the gem .dromelib.yml' do
     it 'should have only the sections defined by the class' do

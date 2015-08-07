@@ -41,7 +41,7 @@ module Dromelib
       fail MissingCredentialsError unless configured?
 
       gmail = Gmail.connect!(username, password)
-      count = gmail.inbox.count(:unread, :from => from)
+      count = gmail.inbox.count(:unread, from: from)
       gmail.logout
 
       return count
