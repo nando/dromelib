@@ -38,10 +38,11 @@ module Dromelib
 
     def unread_count
       init_required!
+
       fail MissingCredentialsError unless configured?
 
       gmail = Gmail.connect!(username, password)
-      count = gmail.inbox.count(:unread, from: from)
+      count = from_or_total_unread_count(gmail)
       gmail.logout
 
       return count
@@ -81,6 +82,16 @@ module Dromelib
         decoded[/^#{subject_prefix} (.+)$/i, 1]
       else
         decoded
+      end
+    end
+
+    def from_or_total_unread_count(gmail)
+      if from
+        from.split(',').map do |address|
+          gmail.inbox.count(:unread, from: address)
+        end.reduce(:+)
+      else
+        gmail.inbox.count :unread
       end
     end
   end
