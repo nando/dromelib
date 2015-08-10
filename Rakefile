@@ -45,9 +45,9 @@ end
 
 task default: [:spec, :rubocop]
 
-desc "Calls to Dromelib::GMail.unread_count"
+desc 'Calls to Dromelib::GMail.unread_count'
 task :unread_count do
   Dromelib.init!
-  puts "Dromelib::GMail.unread_count (from %p) => %p" %
+  puts 'Dromelib::GMail.unread_count (from %p) => %p' %
     [Dromelib::GMail.from, Dromelib::GMail.unread_count]
 end

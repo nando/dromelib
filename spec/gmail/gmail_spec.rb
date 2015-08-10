@@ -18,7 +18,9 @@ describe Dromelib::GMail do
   let(:environment_vars) do
     {
       'GMAIL_USERNAME' => 'fernan.dogs',
-      'GMAIL_PASSWORD' => 'guau!!! guau!!!'
+      'GMAIL_PASSWORD' => 'guau!!! guau!!!',
+      'GMAIL_FROM' => nil,
+      'GMAIL_SUBJECT_PREFIX' => nil
     }
   end
 
@@ -59,8 +61,10 @@ describe Dromelib::GMail do
 
       it 'should check first the environment variable' do
         ClimateControl.modify environment_vars do
-          Dromelib.init!
-          Dromelib::GMail.send(method).must_equal environment_vars["GMAIL_#{method.upcase}"]
+          YAML.stub(:load_file, {}) do
+            Dromelib.init!
+            Dromelib::GMail.send(method).must_equal environment_vars["GMAIL_#{method.upcase}"]
+          end
         end
       end
     end
@@ -142,6 +146,16 @@ describe Dromelib::GMail do
     let(:address) {'valid@email.org'}
     let(:other_address) {'other@email.org'}
     let(:two_addresses) {[address, other_address].join(',')}
+    let(:yaml_with_from) do
+      yaml = yaml_content
+      yaml['gmail']['from'] = address
+      yaml
+    end
+    let(:yaml_with_two_froms) do
+      yaml = yaml_content
+      yaml['gmail']['from'] = two_addresses
+      yaml
+    end
     let(:gmail) { Minitest::Mock.new } # => Gmail.connect!(username, password)
     let(:inbox) { Minitest::Mock.new } # => gmail.inbox
     let(:email) { Minitest::Mock.new } # => inbox.find([...]).first
@@ -161,56 +175,56 @@ describe Dromelib::GMail do
     end
 
     describe '.unread_count' do
-      let(:unread_from_A) { rand(9999) }
-      let(:unread_from_B) { rand(9999) }
+      let(:unread_from_A) { rand(42) }
+      let(:unread_from_B) { rand(42) }
 
       it 'should return all unread emails count if .from is not set' do
         YAML.stub(:load_file, yaml_content) do
-          Dromelib.init!
-          Gmail.stub(:connect!, gmail) do
-            gmail.expect(:inbox, inbox)
-            inbox.expect(:count, unread_from_A, [:unread])
-            gmail.expect(:logout, true)
-            Dromelib::GMail.unread_count.must_equal unread_from_A
+          ClimateControl.modify clean_environment do
+            Dromelib.init!
+            Gmail.stub(:connect!, gmail) do
+              gmail.expect(:inbox, inbox)
+              inbox.expect(:count, unread_from_A, [:unread])
+              gmail.expect(:logout, true)
+              Dromelib::GMail.unread_count.must_equal unread_from_A
+            end
+            gmail.verify
+            inbox.verify
           end
-          gmail.verify
-          inbox.verify
         end
       end
 
       it 'should return the unread emails count from the specified address' do
-        yaml = yaml_content
-        yaml['gmail']['from'] = address
-
-        YAML.stub(:load_file, yaml) do
-          Dromelib.init!
-          Gmail.stub(:connect!, gmail) do
-            gmail.expect(:inbox, inbox)
-            inbox.expect(:count, unread_from_A, [:unread, {from: address}])
-            gmail.expect(:logout, true)
-            Dromelib::GMail.unread_count.must_equal unread_from_A
+        YAML.stub(:load_file, yaml_with_from) do
+          ClimateControl.modify clean_environment do
+            Dromelib.init!
+            Gmail.stub(:connect!, gmail) do
+              gmail.expect(:inbox, inbox)
+              inbox.expect(:count, unread_from_A, [:unread, {from: address}])
+              gmail.expect(:logout, true)
+              Dromelib::GMail.unread_count.must_equal unread_from_A
+            end
+            gmail.verify
+            inbox.verify
           end
-          gmail.verify
-          inbox.verify
         end
       end
 
       it 'should return the sum of unread emails from each address' do
-        yaml = yaml_content
-        yaml['gmail']['from'] = two_addresses
- 
-        YAML.stub(:load_file, yaml) do
-          Dromelib.init!
-          Gmail.stub(:connect!, gmail) do
-            gmail.expect(:inbox, inbox)
-            inbox.expect(:count, unread_from_A, [:unread, {from: address}])
-            gmail.expect(:inbox, inbox)
-            inbox.expect(:count, unread_from_B, [:unread, {from: other_address}])
-            gmail.expect(:logout, true)
-            Dromelib::GMail.unread_count.must_equal unread_from_A + unread_from_B
+        YAML.stub(:load_file, yaml_with_two_froms) do
+          ClimateControl.modify clean_environment do
+            Dromelib.init!
+            Gmail.stub(:connect!, gmail) do
+              gmail.expect(:inbox, inbox)
+              inbox.expect(:count, unread_from_A, [:unread, {from: address}])
+              gmail.expect(:inbox, inbox)
+              inbox.expect(:count, unread_from_B, [:unread, {from: other_address}])
+              gmail.expect(:logout, true)
+              Dromelib::GMail.unread_count.must_equal unread_from_A + unread_from_B
+            end
+            gmail.verify
+            inbox.verify
           end
-          gmail.verify
-          inbox.verify
         end
       end
     end
@@ -228,13 +242,12 @@ describe Dromelib::GMail do
       end
 
       it 'should call its .read! method after reading an email' do
-        from = 'valid@email.es'
-        YAML.stub(:load_file, {}) do
-          ClimateControl.modify environment_vars.merge('GMAIL_FROM' => from) do
+        YAML.stub(:load_file, yaml_with_from) do
+          ClimateControl.modify clean_environment do
             Dromelib.init!
             Gmail.stub(:connect!, gmail) do
               gmail.expect(:inbox, inbox)
-              inbox.expect(:find, [email], [:unread, {from: from}])
+              inbox.expect(:find, [email], [:unread, {from: address}])
               email.expect(:subject, 'drome entry')
               email.expect(:read!, false)
               gmail.expect(:logout, true)
