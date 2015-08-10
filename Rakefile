@@ -33,6 +33,7 @@
 require 'bundler/gem_tasks'
 require 'rake/testtask'
 require 'rubocop/rake_task'
+require './lib/dromelib'
 
 RuboCop::RakeTask.new
 
@@ -43,3 +44,10 @@ Rake::TestTask.new(:spec) do |t|
 end
 
 task default: [:spec, :rubocop]
+
+desc "Calls to Dromelib::GMail.unread_count"
+task :unread_count do
+  Dromelib.init!
+  puts "Dromelib::GMail.unread_count (from %p) => %p" %
+    [Dromelib::GMail.from, Dromelib::GMail.unread_count]
+end
