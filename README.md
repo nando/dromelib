@@ -11,6 +11,8 @@ So, be sure the specs test what you've read in the README if that fails.
 
 ## Usage example from the command line
 
+### Chapter 0: Prepare our console to drome...
+
     ~/src $ git clone http://github.com/nando/dromelib
     Clonar en «dromelib»...
     remote: Counting objects [...]
@@ -18,15 +20,18 @@ So, be sure the specs test what you've read in the README if that fails.
     ~/src/dromelib $ bundle install
     Fetching gem metadata from https://rubygems.org/.........
     [...]
-    ~/src/dromelib $ irb
-    irb(main):001:0> require './lib/dromelib'
-    => true
+    ~/src/dromelib $ ./bin/console
     irb(main):002:0> Dromelib.initialized?
     => false
     irb(main):003:0> Dromelib.init!
     => true
     irb(main):004:0> Dromelib.initialized?
     => true
+    irb(main):005:0> Dromelib.drome
+    => #<Dromelib::Drome:0xba574544>
+
+### Chapter 1: GMail input channel
+
     irb(main):005:0> Dromelib::GMail.configured?
     => false
     irb(main):006:0> ^D
@@ -54,6 +59,65 @@ So, be sure the specs test what you've read in the README if that fails.
     irb(main):008:0> Dromelib::GMail.import!
     Dromelib::GMail::MissingFromError: Required to import only emails from there
     ==> TO BE CONTINUED <==
+
+### Chapter 2: To drome (roadmap ready to suffer... :)
+
+Dromelib.init!
+Dromelib.drome
+=> #<Dromelib::Drome:0xDOCUDROME>
+docs = Dromelib.load_drome # Docudrome is the default drome
+=> #<Dromelib::Drome:0xDOCUDROME>
+
+docs.cardinal_point
+=> #<Dromelib::CardinalPoint:0xSOUTH>
+docs.cardinal_point.drift
+=> S
+docs.cardinal_point.point
+=> Document
+docs.cardinal_point.dromename
+=> docudrome
+
+uncurated = docs.new('Matz')
+=> #<Dromelib::Auido:0xMATZ>
+
+uncurated.cardinal_point.point
+> Document
+
+uncurated.source
+> Console <Linux ragoaika 3.11.0-12-generic [...] i686 GNU/Linux> 
+# Other possible sources:
+# - Web <http://otaony.com/colgado>
+# - Email <colgado@gmail.com>
+
+uncurated.drome
+=> #<Dromelib::Drome:0xDOCUDROME>
+
+uncurated.drome.name
+=> docudrome
+
+uncurated.save!
+=> true
+
+uncurated.curated?
+=> false
+
+humans = Dromelib.load_drome(:lovedrome)
+=> #<Dromelib::Drome:0xLOVEDROME>
+
+uncurated.move_to! humans
+=> true
+
+matz = uncurated.curated! # curated! returns self
+=> #<Dromelib::Auido:0xMATZ>
+
+uncurated.drome.name
+=> lovedrome
+
+matz.drome.name
+=> lovedrome
+
+matz.curated?
+=> true
 
 ## Contributing
 
