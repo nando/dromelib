@@ -159,6 +159,15 @@ describe Dromelib::GMail do
     let(:gmail) { Minitest::Mock.new } # => Gmail.connect!(username, password)
     let(:inbox) { Minitest::Mock.new } # => gmail.inbox
     let(:email) { Minitest::Mock.new } # => inbox.find([...]).first
+    let(:drome) { Minitest::Mock.new } # => Dromelib.drome
+    let(:entry) { Minitest::Mock.new } # => Dromelib.drome.new_entry 'Wadus'
+
+    after do
+      gmail.verify
+      inbox.verify
+      email.verify
+      drome.verify
+    end
 
     [:unread_count, :import!].each do |method|
       it 'should raise MissingCredentialsError if not configured' do  
@@ -188,8 +197,6 @@ describe Dromelib::GMail do
               gmail.expect(:logout, true)
               Dromelib::GMail.unread_count.must_equal unread_from_A
             end
-            gmail.verify
-            inbox.verify
           end
         end
       end
@@ -204,8 +211,6 @@ describe Dromelib::GMail do
               gmail.expect(:logout, true)
               Dromelib::GMail.unread_count.must_equal unread_from_A
             end
-            gmail.verify
-            inbox.verify
           end
         end
       end
@@ -222,8 +227,6 @@ describe Dromelib::GMail do
               gmail.expect(:logout, true)
               Dromelib::GMail.unread_count.must_equal unread_from_A + unread_from_B
             end
-            gmail.verify
-            inbox.verify
           end
         end
       end
@@ -246,13 +249,20 @@ describe Dromelib::GMail do
           ClimateControl.modify clean_environment do
             Dromelib.init!
             Gmail.stub(:connect!, gmail) do
-              gmail.expect(:inbox, inbox)
-              inbox.expect(:find, [email], [:unread, {from: address}])
-              email.expect(:subject, 'drome entry')
-              email.expect(:read!, false)
-              gmail.expect(:logout, true)
+              Dromelib.stub(:drome, drome) do
+                subject = 'drome entry'
+                gmail.expect(:inbox, inbox)
+                inbox.expect(:find, [email], [:unread, {from: address}])
+                email.expect(:subject, subject)
 
-              Dromelib::GMail.import!
+                drome.expect(:new_entry, entry, [subject])
+                entry.expect(:save!, true)
+
+                email.expect(:read!, false)
+                gmail.expect(:logout, true)
+
+                Dromelib::GMail.import!
+              end
             end
           end
         end

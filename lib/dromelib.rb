@@ -3,6 +3,8 @@ require_relative 'dromelib/version'
 require_relative 'dromelib/config'
 require_relative 'dromelib/env'
 require_relative 'dromelib/gmail'
+require_relative 'dromelib/drome'
+require_relative 'dromelib/entry'
 
 # Usage:
 #   * 1st require the lib
@@ -30,6 +32,7 @@ module Dromelib
  
   def init!
     Config.load_yaml!
+    @@drome =  Dromelib::Drome.new
     @@initialized = true
   end
 
@@ -40,6 +43,11 @@ module Dromelib
 
   def initialized?
     @@initialized
+  end
+
+  def drome
+    fail UninitializedError unless initialized?
+    @@drome
   end
   # rubocop:enable Style/ClassVars
 end

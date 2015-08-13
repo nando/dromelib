@@ -57,8 +57,8 @@ module Dromelib
 
       gmail = Gmail.connect!(username, password)
       gmail.inbox.find(:unread, from: from).each do |email|
-        if (tuit = extract_auido_from_email_subject(email.subject))
-          puts ' Importing: ' + tuit
+        if (auido = extract_auido_from_email_subject(email.subject))
+          Dromelib.drome.new_entry(auido).save!
           email.read!
         end
         sleep 1

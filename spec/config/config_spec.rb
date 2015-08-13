@@ -97,7 +97,7 @@ describe Dromelib::Config do
         Dromelib::Config.load_yaml!
         Dromelib::Config.yaml.each_key do |section|
           os = Dromelib::Config.send(section)
-          os.class.must_equal OpenStruct
+          os.must_be_kind_of OpenStruct
           Dromelib::Config.yaml[section].each do |key, value|
             os.send(key).must_equal value
           end

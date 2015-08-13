@@ -2,12 +2,12 @@
 require_relative 'spec_helper'
 
 describe Dromelib do
-  describe 'initialization' do
-    after do
-      Dromelib.end!
-    end
+  after do
+    Dromelib.end!
+  end
 
-    it 'should not be initialized just requiring the library' do
+  describe 'initialization' do
+    it 'should not be initialized until .init! is called' do
       refute Dromelib.initialized?
     end
 
@@ -16,6 +16,19 @@ describe Dromelib do
       assert Dromelib.initialized?
       Dromelib.end!
       refute Dromelib.initialized?
+    end
+  end
+
+  describe '.drome (default Drome instance)' do
+    it 'should raise UninitializedError unless Dromelib.init! has been called first' do
+      proc do
+        Dromelib.drome
+      end.must_raise Dromelib::UninitializedError
+    end
+
+    it 'should return a Drome instance if Dromelib.init! has been called' do
+      Dromelib.init!
+      Dromelib.drome.must_be_kind_of Dromelib::Drome
     end
   end
 end

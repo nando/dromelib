@@ -67,6 +67,8 @@ Dromelib.drome
 => #<Dromelib::Drome:0xDOCUDROME>
 docs = Dromelib.load_drome # Docudrome is the default drome
 => #<Dromelib::Drome:0xDOCUDROME>
+humans = Dromelib.load_drome(:lovedrome)
+=> #<Dromelib::Drome:0xLOVEDROME>
 
 docs.cardinal_point
 => #<Dromelib::CardinalPoint:0xSOUTH>
@@ -77,8 +79,8 @@ docs.cardinal_point.point
 docs.cardinal_point.dromename
 => docudrome
 
-uncurated = docs.new('Matz')
-=> #<Dromelib::Auido:0xMATZ>
+uncurated = docs.new_entry('Matz')
+=> #<Dromelib::Entry:0xMATZ>
 
 uncurated.cardinal_point.point
 > Document
@@ -101,14 +103,11 @@ uncurated.save!
 uncurated.curated?
 => false
 
-humans = Dromelib.load_drome(:lovedrome)
-=> #<Dromelib::Drome:0xLOVEDROME>
-
 uncurated.move_to! humans
 => true
 
 matz = uncurated.curated! # curated! returns self
-=> #<Dromelib::Auido:0xMATZ>
+=> #<Dromelib::Entry:0xMATZ>
 
 uncurated.drome.name
 => lovedrome
