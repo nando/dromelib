@@ -2,9 +2,15 @@
 require_relative '../spec_helper'
 
 describe Dromelib::Drome do
+  let(:drome) { Dromelib::Drome.new }
+
+  it 'should have :docudrome as default name' do
+    drome.name.must_equal :docudrome
+  end
+
   describe '#new_entry' do
     it 'should return an Entry instance' do
-      Dromelib::Drome.new_entry('SemVer').must_be_kind_of Dromelib::Entry
+      drome.new_entry('SemVer').must_be_kind_of Dromelib::Entry
     end
   end
 end

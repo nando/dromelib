@@ -32,7 +32,7 @@ module Dromelib
  
   def init!
     Config.load_yaml!
-    @@drome =  Dromelib::Drome.new
+    @@drome = Dromelib::Drome.new
     @@initialized = true
   end
 
