@@ -5,6 +5,7 @@ describe Dromelib::Entry do
   describe '.new requires a Drome instance and an "auido" (i.e. name)' do
     let(:drome) { Dromelib::Drome.new }
     let(:string) { 'Entry "auido"' }
+    let(:timestamp) { Time.now.utc }
 
     describe 'successful instance creation' do
       after do
@@ -12,12 +13,20 @@ describe Dromelib::Entry do
         @entry.auido.must_equal string
       end
 
-      it 'should do it with two Drome+String consecutive instances' do
+      it 'works with two Drome+String consecutive instances' do
         @entry = Dromelib::Entry.new(drome, string)
       end
 
-      it 'should do it with them as values of :drome & :auido in a Hash' do
+      it 'works with them as values of :drome & :auido in a Hash' do
         @entry = Dromelib::Entry.new(drome: drome, auido: string)
+      end
+
+      it 'should let us specify the timestamp as third argument' do
+        @entry = Dromelib::Entry.new(drome, string, timestamp)
+      end
+
+      it 'should let us specify the timestamp as the :at value of the Hash' do
+        @entry = Dromelib::Entry.new(drome, string, timestamp)
       end
     end
 
