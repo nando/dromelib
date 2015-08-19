@@ -130,23 +130,6 @@ only ideas that i'd like to think better but that i want them here.
     matz.curated?
     => true
 
-The class and instance method ''dromes_for'' give us the dromes where an entry with that name/auido has been stored.
-
-IMPORTANT NOTE: Calling #save! in an entry instance will store the entries in its drome if that entry didn't exist previously in that drome:
-
-    railsOnDrome = docs.new_entry('RaisOnDrome')
-    => #<Dromelib::Entry:0xRailsOnDrome>
-    
-    docs.exist? 'RailsOnDrome'
-    => false
-    
-    railsOnDrome.save!
-    => true
-    
-    docs.exist? 'RailsOnDrome'
-    => true
-
-
 ## Contributing
 
 Way to go:
