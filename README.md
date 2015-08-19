@@ -7,7 +7,7 @@ with the important Auidrome's features tested. I'm trying to write this
 README first, doing something that we could call RDD (Readme Driven
 Development :)
 
-So, be sure the specs test what you've read in the README if that fails.
+So, be sure the specs test what you've read in the README if that feature is not working for you.
 
 ## Usage example from the command line
 
@@ -62,61 +62,90 @@ So, be sure the specs test what you've read in the README if that fails.
 
 ### Chapter 2: To drome (roadmap ready to suffer... :)
 
-Dromelib.init!
-Dromelib.drome
-=> #<Dromelib::Drome:0xDOCUDROME>
-docs = Dromelib.load_drome # Docudrome is the default drome
-=> #<Dromelib::Drome:0xDOCUDROME>
-humans = Dromelib.load_drome(:lovedrome)
-=> #<Dromelib::Drome:0xLOVEDROME>
+    Dromelib.init!
+    Dromelib.drome
+    => #<Dromelib::Drome:0xDOCUDROME>
+    docs = Dromelib.load_drome # Docudrome is the default drome
+    => #<Dromelib::Drome:0xDOCUDROME>
+    humans = Dromelib.load_drome(:lovedrome)
+    => #<Dromelib::Drome:0xLOVEDROME>
+    # Each drome hangs from a cardinal_point:
+    docs.cardinal_point
+    => #<Dromelib::CardinalPoint:0xSOUTH>
+    docs.cardinal_point.drift
+    => S
+    docs.cardinal_point.point
+    => Document
+    docs.cardinal_point.dromename
+    => "docudrome"
+    # Let's create an entry:
+    uncurated = docs.create_entry!('Matz')
+    => #<Dromelib::Entry:0xMatz>
+    uncurated.auido
+    => "Matz"
+    uncurated.name          # Entry#name is the #auido transliterated&downcased
+    => "matz"
+    docs.exist? 'matz'      # Looks for the #auido, witch is case sensitive
+    => false
+    docs.exist_name? 'MATZ' # Looks for the #name, witch is case UNsensitive
+    => true
 
-docs.cardinal_point
-=> #<Dromelib::CardinalPoint:0xSOUTH>
-docs.cardinal_point.drift
-=> S
-docs.cardinal_point.point
-=> Document
-docs.cardinal_point.dromename
-=> docudrome
+End of the first part of the second chapter. Better stop reading here. Next are
+only ideas that i'd like to think better but that i want them here.
 
-uncurated = docs.new_entry('Matz')
-=> #<Dromelib::Entry:0xMATZ>
+    uncurated.saved?
+    => false
+    # Still not saved, but we can ask some things (name/timestamp/drome)
+    uncurated.drome.name
+    => lovedrome
+    uncurated.created_at
+    > 2015-08-18 13:47:06 UTC
+    uncurated.cardinal_point.point
+    > Document
 
-uncurated.cardinal_point.point
-> Document
+    uncurated.source
+    > SaveMeFirstError Exception # We're asking for other thing
 
-uncurated.source
-> Console <Linux ragoaika 3.11.0-12-generic [...] i686 GNU/Linux> 
-# Other possible sources:
-# - Web <http://otaony.com/colgado>
-# - Email <colgado@gmail.com>
+    uncurated.save!
+    => true                 # 
 
-uncurated.drome
-=> #<Dromelib::Drome:0xDOCUDROME>
+    uncurated.source
+    > Console <Linux ragoaika 3.11.0-12-generic [...] i686 GNU/Linux> 
+    # Other possible sources:
+    # - Web <http://otaony.com/colgado>
+    # - Email <colgado@gmail.com>
+    
+    uncurated.curated?
+    => false
+    
+    uncurated.move_to! humans
+    => true
+    
+    matz = uncurated.curated! # curated! returns self
+    => #<Dromelib::Entry:0xMATZ>
+    
+    matz.drome.name
+    => lovedrome
+    
+    matz.curated?
+    => true
 
-uncurated.drome.name
-=> docudrome
+The class and instance method ''dromes_for'' give us the dromes where an entry with that name/auido has been stored.
 
-uncurated.save!
-=> true
+IMPORTANT NOTE: Calling #save! in an entry instance will store the entries in its drome if that entry didn't exist previously in that drome:
 
-uncurated.curated?
-=> false
+    railsOnDrome = docs.new_entry('RaisOnDrome')
+    => #<Dromelib::Entry:0xRailsOnDrome>
+    
+    docs.exist? 'RailsOnDrome'
+    => false
+    
+    railsOnDrome.save!
+    => true
+    
+    docs.exist? 'RailsOnDrome'
+    => true
 
-uncurated.move_to! humans
-=> true
-
-matz = uncurated.curated! # curated! returns self
-=> #<Dromelib::Entry:0xMATZ>
-
-uncurated.drome.name
-=> lovedrome
-
-matz.drome.name
-=> lovedrome
-
-matz.curated?
-=> true
 
 ## Contributing
 
