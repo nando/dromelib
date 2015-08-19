@@ -69,15 +69,6 @@ So, be sure the specs test what you've read in the README if that feature is not
     => #<Dromelib::Drome:0xDOCUDROME>
     humans = Dromelib.load_drome(:lovedrome)
     => #<Dromelib::Drome:0xLOVEDROME>
-    # Each drome hangs from a cardinal_point:
-    docs.cardinal_point
-    => #<Dromelib::CardinalPoint:0xSOUTH>
-    docs.cardinal_point.drift
-    => S
-    docs.cardinal_point.point
-    => Document
-    docs.cardinal_point.dromename
-    => "docudrome"
     # Let's create an entry:
     uncurated = docs.create_entry!('Matz')
     => #<Dromelib::Entry:0xMatz>
@@ -129,6 +120,16 @@ only ideas that i'd like to think better but that i want them here.
     
     matz.curated?
     => true
+
+    # Each drome hangs from a cardinal_point:
+    docs.cardinal_point
+    => #<Dromelib::CardinalPoint:0xSOUTH>
+    docs.cardinal_point.drift
+    => S
+    docs.cardinal_point.point
+    => Document
+    docs.cardinal_point.dromename
+    => "docudrome"
 
 ## Contributing
 
