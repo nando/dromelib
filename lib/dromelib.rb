@@ -29,10 +29,11 @@ module Dromelib
 
   # rubocop:disable Style/ClassVars
   @@initialized = false
+  @@dromes = {}
  
   def init!
     Config.load_yaml!
-    @@drome = Dromelib::Drome.new
+    @@dromes[:docudrome] = Dromelib::Drome.new
     @@initialized = true
   end
 
@@ -47,7 +48,12 @@ module Dromelib
 
   def drome
     fail UninitializedError unless initialized?
-    @@drome
+    @@dromes[:docudrome]
   end
   # rubocop:enable Style/ClassVars
+
+  def load_drome(dromename = nil)
+    dromename ||= :docudrome
+    @@dromes[dromename] ||= Dromelib::Drome.open(dromename)
+  end
 end

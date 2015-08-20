@@ -19,16 +19,35 @@ describe Dromelib do
     end
   end
 
-  describe '.drome (default Drome instance)' do
+  describe '::drome (default Drome instance)' do
     it 'should raise UninitializedError unless Dromelib.init! has been called first' do
       proc do
         Dromelib.drome
       end.must_raise Dromelib::UninitializedError
     end
 
-    it 'should return a Drome instance if Dromelib.init! has been called' do
+    it 'should return the Docudrome instance if Dromelib.init! has been called' do
       Dromelib.init!
-      Dromelib.drome.must_be_kind_of Dromelib::Drome
+      Dromelib.drome.name.must_equal :docudrome
+    end
+  end
+
+  describe '::load_drome method' do
+    before do
+      Dromelib.init!
+    end
+
+    it 'should return the default drome if called without params' do
+      Dromelib.load_drome.must_equal Dromelib.drome
+    end
+
+    it 'should return the right drome if called with its symbol' do
+      Dromelib.load_drome(:lovedrome).name.must_equal :lovedrome
+    end
+
+    it 'should return the right drome if called with its string' do
+      skip
+      Dromelib.load_drome('lovedrome').name.must_equal :lovedrome
     end
   end
 end
