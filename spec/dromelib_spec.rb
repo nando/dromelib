@@ -41,13 +41,18 @@ describe Dromelib do
       Dromelib.load_drome.must_equal Dromelib.drome
     end
 
+    # TODO: I think next specs should be in the Drome's specs an here just the
+    #   expectation about the Drome class method being called.
     it 'should return the right drome if called with its symbol' do
       Dromelib.load_drome(:lovedrome).name.must_equal :lovedrome
     end
 
-    it 'should return the right drome if called with its string' do
-      skip
+    it 'should return the right drome if called with its string representation' do
       Dromelib.load_drome('lovedrome').name.must_equal :lovedrome
+    end
+
+    it 'should be case unsensitive' do
+      Dromelib.load_drome('LovedRome').name.must_equal :lovedrome
     end
   end
 end
