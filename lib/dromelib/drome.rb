@@ -35,7 +35,7 @@ module Dromelib
 
     def open
       config_file = config_filepath
-      fail DromeNotFoundError unless File.exist?(config_file)
+      fail(DromeNotFoundError, @name) unless File.exist?(config_file)
       @yaml = YAML.load_file(config_file)
     end
 
