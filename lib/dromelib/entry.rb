@@ -25,7 +25,7 @@ module Dromelib
       fail ArgumentError unless drome.is_a?(Dromelib::Drome) && auido.is_a?(String)
       @drome = drome
       @auido = auido
-      @created_at ||= Time.now.utc
+      @created_at = created_at || Time.now.utc
     end
   end
 end

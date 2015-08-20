@@ -21,12 +21,14 @@ describe Dromelib::Entry do
         @entry = Dromelib::Entry.new(drome: drome, auido: string)
       end
 
-      it 'should let us specify the timestamp as third argument' do
+      it 'should let us specify #created_at as third argument' do
         @entry = Dromelib::Entry.new(drome, string, timestamp)
+        @entry.created_at.must_equal timestamp
       end
 
-      it 'should let us specify the timestamp as the :at value of the Hash' do
-        @entry = Dromelib::Entry.new(drome, string, timestamp)
+      it 'should let us specify #created_at as the :at value of the Hash' do
+        @entry = Dromelib::Entry.new(drome: drome, auido: string, at: timestamp)
+        @entry.created_at.must_equal timestamp
       end
     end
 
