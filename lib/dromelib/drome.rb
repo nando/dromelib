@@ -7,7 +7,7 @@ module Dromelib
     attr_reader :name
 
     def initialize(name = :docudrome)
-      @name = name
+      @name = name.to_s.downcase.to_sym
       open
     end
 

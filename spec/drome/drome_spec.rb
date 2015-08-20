@@ -42,6 +42,10 @@ describe Dromelib::Drome do
         end
       end
     end
+
+    it 'should keep the name of the drome as symbol' do
+      Dromelib::Drome.open('docudrome').name.must_equal :docudrome
+    end
   end
 
   describe '#new_entry' do
