@@ -9,7 +9,7 @@ module Dromelib
 
     def initialize(name = :docudrome)
       @name = name.to_s.downcase.to_sym
-      open
+      _open
     end
 
     def self.open(name)
@@ -25,14 +25,21 @@ module Dromelib
     end
 
     def entries
-      @entries ||= {}
+      @entries ||= (File.exist?(entries_json) ? _read_json : {})
     end
 
     def create_entry!(raw_entry)
       auido = raw_entry.to_sym
       fail EntryExistsError if entries[auido]
       @entries[auido] = Time.now.utc
+      File.open(entries_json, 'w') do |file|
+        file.write JSON.pretty_generate(@entries)
+      end
       Dromelib::Entry.new(drome: self, auido: auido)
+    end
+
+    def entries_json
+      "data/public/#{name}/entries.json"
     end
 
     def method_missing(method, *args, &block)
@@ -41,19 +48,23 @@ module Dromelib
 
     private
 
-    def open
-      config_file = config_filepath
+    def _open
+      config_file = _config_filepath
       fail(DromeNotFoundError, @name) unless File.exist?(config_file)
       @yaml = YAML.load_file(config_file)
     end
 
-    def config_filepath
+    def _config_filepath
       localfile = Drome.local_config_file(@name)
       if File.exist?(localfile)
         localfile
       else
         Drome.gem_config_file(@name)
       end
+    end
+
+    def _read_json
+      JSON.parse(File.read(entries_json), symbolize_names: true)
     end
   end
 end
