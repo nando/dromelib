@@ -4,6 +4,7 @@ module Dromelib
 
   # A place where any entry is welcome.
   class Drome
+    class EntryExistsError < ArgumentError; end
     attr_reader :name
 
     def initialize(name = :docudrome)
@@ -23,7 +24,14 @@ module Dromelib
       File.dirname(__FILE__) + "/../../config/dromes/#{name}.yml"
     end
 
-    def new_entry(auido)
+    def entries
+      @entries ||= {}
+    end
+
+    def create_entry!(raw_entry)
+      auido = raw_entry.to_sym
+      fail EntryExistsError if entries[auido]
+      @entries[auido] = Time.now.utc
       Dromelib::Entry.new(drome: self, auido: auido)
     end
 

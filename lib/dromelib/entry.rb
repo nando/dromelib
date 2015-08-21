@@ -22,9 +22,10 @@ module Dromelib
     private
 
     def _initialize(drome, auido, created_at)
-      fail ArgumentError unless drome.is_a?(Dromelib::Drome) && auido.is_a?(String)
+      fail(ArgumentError, drome) unless drome.is_a?(Dromelib::Drome)
+      fail(ArgumentError, auido) unless auido.respond_to?(:to_sym)
       @drome = drome
-      @auido = auido
+      @auido = auido.to_sym
       @created_at = created_at || Time.now.utc
     end
   end

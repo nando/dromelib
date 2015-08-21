@@ -48,11 +48,18 @@ describe Dromelib::Drome do
     end
   end
 
-  describe '#new_entry' do
+  describe '#create_entry!' do
     it 'should return an Entry instance with the right drome inside' do
-      entry = default_drome.new_entry('SemVer')
+      entry = default_drome.create_entry!('SemVer')
       entry.must_be_kind_of Dromelib::Entry
       entry.drome.must_equal default_drome
+    end
+
+    it 'should raise EntryExistsError if that name/auido is already present' do
+      default_drome.create_entry!('Ruby')
+      proc do
+        default_drome.create_entry!('Ruby')
+      end.must_raise Dromelib::Drome::EntryExistsError
     end
   end
 end
