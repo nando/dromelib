@@ -160,7 +160,7 @@ describe Dromelib::GMail do
     let(:inbox) { Minitest::Mock.new } # => gmail.inbox
     let(:email) { Minitest::Mock.new } # => inbox.find([...]).first
     let(:drome) { Minitest::Mock.new } # => Dromelib.drome
-    let(:entry) { Minitest::Mock.new } # => Dromelib.drome.new_entry 'Wadus'
+    let(:entry) { Minitest::Mock.new } # => Dromelib.drome.create_entry!('Wadus')
 
     after do
       gmail.verify
@@ -231,37 +231,48 @@ describe Dromelib::GMail do
         end
       end
     end
+
+    describe '"from" required methods' do
+      let(:subject) { 'drome Entry example' }
   
-    describe '.import!' do
-      it 'should raise MissingFromError if "from" is not valid' do  
-        YAML.stub(:load_file, {}) do
-          ClimateControl.modify environment_vars.merge('GMAIL_FROM' => 'invalid@email') do
-            proc do
-              Dromelib.init!
-              Dromelib::GMail.import!
-            end.must_raise Dromelib::GMail::MissingFromError
+      %i(
+        each_unread_email
+        show_unread
+        import!
+      ).each do |method|
+        describe ".#{method}" do
+          it 'should raise MissingFromError if "from" is not valid' do  
+            YAML.stub(:load_file, {}) do
+              ClimateControl.modify environment_vars.merge('GMAIL_FROM' => 'invalid@email') do
+                proc do
+                  Dromelib.init!
+                  Dromelib::GMail.send method
+                end.must_raise Dromelib::GMail::MissingFromError
+              end
+            end
           end
         end
       end
-
-      it 'should call its .read! method after reading an email' do
-        YAML.stub(:load_file, yaml_with_from) do
-          ClimateControl.modify clean_environment do
-            Dromelib.init!
-            Gmail.stub(:connect!, gmail) do
-              Dromelib.stub(:drome, drome) do
-                subject = 'drome entry'
-                gmail.expect(:inbox, inbox)
-                inbox.expect(:find, [email], [:unread, {from: address}])
-                email.expect(:subject, subject)
-
-                drome.expect(:new_entry, entry, [subject])
-                entry.expect(:save!, true)
-
-                email.expect(:read!, false)
-                gmail.expect(:logout, true)
-
-                Dromelib::GMail.import!
+    
+      describe '.import!' do
+        it 'should call its .read! method after reading an email' do
+          YAML.stub(:load_file, yaml_with_from) do
+            ClimateControl.modify clean_environment do
+              Dromelib.init!
+              Gmail.stub(:connect!, gmail) do
+                Dromelib.stub(:drome, drome) do
+                  gmail.expect(:inbox, inbox)
+                  inbox.expect(:find, [email], [:unread, {from: address}])
+                  email.expect(:subject, subject)
+                  email.expect(:attachments, [])
+  
+                  drome.expect(:create_entry!, entry, [subject])
+  
+                  email.expect(:read!, false)
+                  gmail.expect(:logout, true)
+  
+                  Dromelib::GMail.import!
+                end
               end
             end
           end

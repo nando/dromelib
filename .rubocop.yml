@@ -7,6 +7,12 @@ Style/TrailingWhitespace:
   Enabled: false
 Style/RedundantReturn:
   Enabled: false
+
+# I don't understand what's the problem here. The same is done in #show_unread
+#   and it does not complain there :(
+Style/Next:
+  Enabled: false
+
 # Lack of knowledge to do it the right way...
 Style/ModuleFunction:
   Enabled: false # I'd like to learn how to avoid "extend self" :(
