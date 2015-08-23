@@ -30,7 +30,7 @@ module Dromelib
 
     def create_entry!(raw_entry)
       auido = raw_entry.to_sym
-      fail EntryExistsError if entries[auido]
+      fail(EntryExistsError, raw_entry) if entries[auido]
       @entries[auido] = Time.now.utc
       File.open(entries_json, 'w') do |file|
         file.write JSON.pretty_generate(@entries)
