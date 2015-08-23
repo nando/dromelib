@@ -66,12 +66,6 @@ describe Dromelib::Drome do
   end
 
   describe '#create_entry!' do
-    let(:json_entries) do
-      {
-        Ruby: '2015-08-21 12:47:10 UTC'
-      }
-    end
-
     it 'should return an Entry instance with the right drome inside' do
       JSON.stub(:parse, {}) do
         entry = default_drome.create_entry!('SemVer')
@@ -81,8 +75,9 @@ describe Dromelib::Drome do
     end
 
     it 'should raise EntryExistsError if that name/auido is already present' do
-      JSON.stub(:parse, json_entries) do
+      JSON.stub(:parse, {}) do
         proc do
+          default_drome.create_entry!('Ruby')
           default_drome.create_entry!('Ruby')
         end.must_raise Dromelib::Drome::EntryExistsError
       end
