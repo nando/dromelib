@@ -57,9 +57,11 @@ module Dromelib
       _read_required!
 
       gmail = Gmail.connect!(username, password)
-      gmail.inbox.find(:unread, from: from).each do |email|
-        yield email
-        sleep 1
+      from.split(',').map do |address|
+        gmail.inbox.find(:unread, from: address).each do |email|
+          yield email
+          sleep 1
+        end
       end
       gmail.logout
     end

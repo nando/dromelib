@@ -33,6 +33,20 @@ describe Dromelib::GMail do
     }
   end
 
+  let(:address) {'valid@email.org'}
+  let(:other_address) {'other@email.org'}
+  let(:two_addresses) {[address, other_address].join(',')}
+  let(:yaml_with_from) do
+    yaml = yaml_content
+    yaml['gmail']['from'] = address
+    yaml
+  end
+  let(:yaml_with_two_froms) do
+    yaml = yaml_content
+    yaml['gmail']['from'] = two_addresses
+    yaml
+  end
+
   describe 'instance methods' do
     it 'should raise UninitializedError unless Dromelib.init! has been called first' do
       Dromelib::GMail.instance_methods.each do |method| 
@@ -141,19 +155,6 @@ describe Dromelib::GMail do
   end
 
   describe 'credentials required methods' do
-    let(:address) {'valid@email.org'}
-    let(:other_address) {'other@email.org'}
-    let(:two_addresses) {[address, other_address].join(',')}
-    let(:yaml_with_from) do
-      yaml = yaml_content
-      yaml['gmail']['from'] = address
-      yaml
-    end
-    let(:yaml_with_two_froms) do
-      yaml = yaml_content
-      yaml['gmail']['from'] = two_addresses
-      yaml
-    end
     let(:gmail) { Minitest::Mock.new } # => Gmail.connect!(username, password)
     let(:inbox) { Minitest::Mock.new } # => gmail.inbox
     let(:email) { Minitest::Mock.new } # => inbox.find([...]).first
@@ -167,7 +168,12 @@ describe Dromelib::GMail do
       drome.verify
     end
 
-    [:unread_count, :import!].each do |method|
+    %w(
+      unread_count
+      each_unread_email
+      show_unread
+      import!
+    ).each do |method|
       it 'should raise MissingCredentialsError if not configured' do  
         YAML.stub(:load_file, {}) do
           ClimateControl.modify clean_environment do
@@ -237,7 +243,7 @@ describe Dromelib::GMail do
         show_unread
         import!
       ).each do |method|
-        describe ".#{method}" do
+        describe "##{method}" do
           it 'should raise MissingFromError if "from" is not valid' do  
             YAML.stub(:load_file, {}) do
               ClimateControl.modify environment_vars.merge('GMAIL_FROM' => 'invalid@email') do
@@ -251,15 +257,17 @@ describe Dromelib::GMail do
         end
       end
     
-      describe '.import!' do
+      describe '#import!' do
         it 'should call its .read! method after reading an email' do
-          YAML.stub(:load_file, yaml_with_from) do
+          YAML.stub(:load_file, yaml_with_two_froms) do
             ClimateControl.modify clean_environment do
               Dromelib.init!
               Gmail.stub(:connect!, gmail) do
                 Dromelib.stub(:drome, drome) do
                   gmail.expect(:inbox, inbox)
                   inbox.expect(:find, [email], [:unread, {from: address}])
+                  gmail.expect(:inbox, inbox)
+                  inbox.expect(:find, [], [:unread, {from: other_address}])
                   email.expect(:subject, subject)
                   email.expect(:attachments, [])
   
