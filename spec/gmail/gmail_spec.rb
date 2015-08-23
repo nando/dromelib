@@ -235,7 +235,7 @@ describe Dromelib::GMail do
     describe '"from" required methods' do
       let(:subject) { 'drome Entry example' }
   
-      %i(
+      %w(
         each_unread_email
         show_unread
         import!
