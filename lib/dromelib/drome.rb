@@ -42,16 +42,18 @@ module Dromelib
       "data/public/#{name}/entries.json"
     end
 
-    def method_missing(method, *args, &block)
-      @yaml[method.to_sym] || super
-    end
-
     private
 
     def _open
       config_file = _config_filepath
       fail(DromeNotFoundError, @name) unless File.exist?(config_file)
-      @yaml = YAML.load_file(config_file)
+      YAML.load_file(config_file).each do |key, value|
+        (class << self; self; end).class_eval do
+          define_method key do
+            value
+          end
+        end 
+      end
     end
 
     def _config_filepath
