@@ -54,7 +54,7 @@ describe Dromelib::GMail do
         ClimateControl.modify clean_environment do
           YAML.stub(:load_file, yaml_content) do
             Dromelib.init!
-            Dromelib::GMail.send(method).must_equal yaml_content['gmail'][method]
+            _(Dromelib::GMail.send(method)).must_equal yaml_content['gmail'][method]
           end
         end
       end
@@ -63,7 +63,7 @@ describe Dromelib::GMail do
         ClimateControl.modify environment_vars do
           YAML.stub(:load_file, {}) do
             Dromelib.init!
-            Dromelib::GMail.send(method).must_equal environment_vars["GMAIL_#{method.upcase}"]
+            _(Dromelib::GMail.send(method)).must_equal environment_vars["GMAIL_#{method.upcase}"]
           end
         end
       end
@@ -75,8 +75,7 @@ describe Dromelib::GMail do
       YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
         ClimateControl.modify environment_vars do
           Dromelib.init!
-          assert Dromelib::GMail.configured?,
-                 '.username and .password ENV vars. should let us be configured.'
+          _(Dromelib::GMail).must_be :configured?
         end
       end
     end
@@ -85,8 +84,7 @@ describe Dromelib::GMail do
       YAML.stub(:load_file, yaml_content) do
         ClimateControl.modify clean_environment do
           Dromelib.init!
-          assert Dromelib::GMail.configured?,
-                 'local .dromelib.yml should let us set the credentials too.'
+          _(Dromelib::GMail).must_be :configured?
         end
       end
     end
@@ -102,7 +100,7 @@ describe Dromelib::GMail do
         YAML.stub(:load_file, yaml) do
           ClimateControl.modify env do
             Dromelib.init!
-            refute Dromelib::GMail.configured?
+            _(Dromelib::GMail).wont_be :configured?
           end
         end
       end
@@ -114,7 +112,7 @@ describe Dromelib::GMail do
         YAML.stub(:load_file, yaml) do
           ClimateControl.modify env do
             Dromelib.init!
-            refute Dromelib::GMail.configured?
+            _(Dromelib::GMail).wont_be :configured?
           end
         end
       end
@@ -127,7 +125,7 @@ describe Dromelib::GMail do
     it 'should be true for a valid email' do
       ClimateControl.modify environment_vars.merge('GMAIL_FROM' => email) do
         Dromelib.init!
-        assert Dromelib::GMail.valid_from?
+        _(Dromelib::GMail).must_be :valid_from?
       end
     end
 
@@ -135,7 +133,7 @@ describe Dromelib::GMail do
       it "should be false for '#{invalid_from || '<nil>'}'" do
         ClimateControl.modify environment_vars.merge('GMAIL_FROM' => invalid_from) do
           Dromelib.init!
-          refute Dromelib::GMail.valid_from?
+          _(Dromelib::GMail).wont_be :valid_from?
           Dromelib.end!
         end
       end
@@ -175,7 +173,6 @@ describe Dromelib::GMail do
           ClimateControl.modify clean_environment do
             proc do
               Dromelib.init!
-              refute Dromelib::GMail.configured?
               Dromelib::GMail.send method
             end.must_raise Dromelib::GMail::MissingCredentialsError
           end
@@ -195,7 +192,7 @@ describe Dromelib::GMail do
               gmail.expect(:inbox, inbox)
               inbox.expect(:count, unread_from_A, [:unread])
               gmail.expect(:logout, true)
-              Dromelib::GMail.unread_count.must_equal unread_from_A
+              _(Dromelib::GMail.unread_count).must_equal unread_from_A
             end
           end
         end
@@ -209,7 +206,7 @@ describe Dromelib::GMail do
               gmail.expect(:inbox, inbox)
               inbox.expect(:count, unread_from_A, [:unread, {from: address}])
               gmail.expect(:logout, true)
-              Dromelib::GMail.unread_count.must_equal unread_from_A
+              _(Dromelib::GMail.unread_count).must_equal unread_from_A
             end
           end
         end
@@ -225,7 +222,7 @@ describe Dromelib::GMail do
               gmail.expect(:inbox, inbox)
               inbox.expect(:count, unread_from_B, [:unread, {from: other_address}])
               gmail.expect(:logout, true)
-              Dromelib::GMail.unread_count.must_equal unread_from_A + unread_from_B
+              _(Dromelib::GMail.unread_count).must_equal unread_from_A + unread_from_B
             end
           end
         end

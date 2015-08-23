@@ -32,19 +32,19 @@ describe Dromelib::Config do
   describe 'the gem .dromelib.yml' do
     it 'should have only the sections defined by the class' do
       gem_yaml.each_key do |yaml_section|
-        Dromelib::Config.sections.must_include yaml_section
+        _(Dromelib::Config.sections).must_include yaml_section
       end
     end
   end
 
   describe '.gem_yaml class method' do
     it 'should return a hash whose keys are the sections defined by the class' do 
-      Dromelib::Config.gem_yaml.keys.sort.must_equal Dromelib::Config.sections.sort
+      _(Dromelib::Config.gem_yaml.keys.sort).must_equal Dromelib::Config.sections.sort
     end
 
     it 'should return the gem .dromelib.yml contents' do
       gem_yaml.each do |section, config|
-        Dromelib::Config.gem_yaml[section].must_equal config
+        _(Dromelib::Config.gem_yaml[section]).must_equal config
       end
     end
   end
@@ -54,9 +54,9 @@ describe Dromelib::Config do
       YAML.stub(:load_file, stubbed_yaml) do
         stubbed_yaml.each do |section, config|
           if Dromelib::Config.sections.include? section
-            Dromelib::Config.local_yaml.keys.must_include section
+            _(Dromelib::Config.local_yaml.keys).must_include section
           else
-            Dromelib::Config.local_yaml.keys.wont_include section
+            _(Dromelib::Config.local_yaml.keys).wont_include section
           end
         end
       end
@@ -65,7 +65,7 @@ describe Dromelib::Config do
     it 'should return the config values defined into the local .dromelib.yml' do
       YAML.stub(:load_file, stubbed_yaml) do
         Dromelib::Config.local_yaml.each do |section, config|
-          config.must_equal stubbed_yaml[section]
+          _(config).must_equal stubbed_yaml[section]
         end
       end
     end
@@ -74,7 +74,7 @@ describe Dromelib::Config do
   describe '.yaml' do
     it 'should have only the sections defined by the class' do
       YAML.stub(:load_file, stubbed_yaml) do
-        Dromelib::Config.yaml.keys.sort.must_equal Dromelib::Config.sections.sort
+        _(Dromelib::Config.yaml.keys.sort).must_equal Dromelib::Config.sections.sort
       end
     end
 
@@ -82,9 +82,9 @@ describe Dromelib::Config do
       YAML.stub(:load_file, stubbed_yaml) do
         Dromelib::Config.yaml.each do |section, config|
           if Dromelib::Config.local_yaml.keys.include?(section)
-            config.must_equal stubbed_yaml[section]
+            _(config).must_equal stubbed_yaml[section]
           else
-            config.must_equal Dromelib::Config.gem_yaml[section]
+            _(config).must_equal Dromelib::Config.gem_yaml[section]
           end
         end
       end
@@ -97,9 +97,9 @@ describe Dromelib::Config do
         Dromelib::Config.load_yaml!
         Dromelib::Config.yaml.each_key do |section|
           os = Dromelib::Config.send(section)
-          os.must_be_kind_of OpenStruct
+          _(os).must_be_kind_of OpenStruct
           Dromelib::Config.yaml[section].each do |key, value|
-            os.send(key).must_equal value
+            _(os.send(key)).must_equal value
           end
         end
       end

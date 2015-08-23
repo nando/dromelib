@@ -8,14 +8,14 @@ describe Dromelib do
 
   describe 'initialization' do
     it 'should not be initialized until .init! is called' do
-      refute Dromelib.initialized?
+      _(Dromelib).wont_be :initialized?
     end
 
     it 'should be initialized/un-initialized after calling .init!/.end!' do
       Dromelib.init!
-      assert Dromelib.initialized?
+      _(Dromelib).must_be :initialized?
       Dromelib.end!
-      refute Dromelib.initialized?
+      _(Dromelib).wont_be :initialized?
     end
   end
 
@@ -28,7 +28,7 @@ describe Dromelib do
 
     it 'should return the Docudrome instance if Dromelib.init! has been called' do
       Dromelib.init!
-      Dromelib.drome.name.must_equal :docudrome
+      _(Dromelib.drome.name).must_equal :docudrome
     end
   end
 
@@ -38,21 +38,21 @@ describe Dromelib do
     end
 
     it 'should return the default drome if called without params' do
-      Dromelib.load_drome.must_equal Dromelib.drome
+      _(Dromelib.load_drome).must_equal Dromelib.drome
     end
 
     # TODO: I think next specs should be in the Drome's specs an here just the
     #   expectation about the Drome class method being called.
     it 'should return the right drome if called with its symbol' do
-      Dromelib.load_drome(:lovedrome).name.must_equal :lovedrome
+      _(Dromelib.load_drome(:lovedrome).name).must_equal :lovedrome
     end
 
     it 'should return the right drome if called with its string representation' do
-      Dromelib.load_drome('lovedrome').name.must_equal :lovedrome
+      _(Dromelib.load_drome('lovedrome').name).must_equal :lovedrome
     end
 
     it 'should be case unsensitive' do
-      Dromelib.load_drome('LovedRome').name.must_equal :lovedrome
+      _(Dromelib.load_drome('LovedRome').name).must_equal :lovedrome
     end
   end
 end

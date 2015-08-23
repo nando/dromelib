@@ -45,7 +45,7 @@ describe Dromelib::Env do
     it 'should use the default name on a clean environment' do
       Dromelib.init!
       ClimateControl.modify clean_environment do
-        Dromelib::Env.name_for(:stream_actor).must_equal default_name[:stream_actor]
+        _(Dromelib::Env.name_for(:stream_actor)).must_equal default_name[:stream_actor]
       end
     end
 
@@ -53,7 +53,7 @@ describe Dromelib::Env do
       YAML.stub(:load_file, yaml_content) do
         Dromelib.init!
         ClimateControl.modify environment_values do
-          Dromelib::Env.name_for(:stream_actor).must_equal custom_name[:stream_actor]
+          _(Dromelib::Env.name_for(:stream_actor)).must_equal custom_name[:stream_actor]
         end
       end
     end
@@ -63,7 +63,7 @@ describe Dromelib::Env do
     it 'should read the value of the default ENV var. on a clean environment' do
       Dromelib.init!
       ClimateControl.modify clean_environment.merge(environment_values) do
-        Dromelib::Env.value_for(:stream_actor).must_equal environment_values[:STREAM_ACTOR]
+        _(Dromelib::Env.value_for(:stream_actor)).must_equal environment_values[:STREAM_ACTOR]
       end
     end
 
@@ -71,7 +71,7 @@ describe Dromelib::Env do
       YAML.stub(:load_file, yaml_content) do
         Dromelib.init!
         ClimateControl.modify clean_environment.merge(environment_values) do
-          Dromelib::Env.value_for(:stream_actor).must_equal environment_values[:CUSTOM_ACTOR]
+          _(Dromelib::Env.value_for(:stream_actor)).must_equal environment_values[:CUSTOM_ACTOR]
         end
       end
     end

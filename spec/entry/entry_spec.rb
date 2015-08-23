@@ -9,8 +9,8 @@ describe Dromelib::Entry do
 
     describe 'successful instance creation' do
       after do
-        @entry.drome.must_equal drome
-        @entry.auido.must_equal auido
+        _(@entry.drome).must_equal drome
+        _(@entry.auido).must_equal auido
       end
 
       it 'works with two Drome+String consecutive instances' do
@@ -23,12 +23,12 @@ describe Dromelib::Entry do
 
       it 'should let us specify #created_at as third argument' do
         @entry = Dromelib::Entry.new(drome, auido, timestamp)
-        @entry.created_at.must_equal timestamp
+        _(@entry.created_at).must_equal timestamp
       end
 
       it 'should let us specify #created_at as the :at value of the Hash' do
         @entry = Dromelib::Entry.new(drome: drome, auido: auido, at: timestamp)
-        @entry.created_at.must_equal timestamp
+        _(@entry.created_at).must_equal timestamp
       end
     end
 

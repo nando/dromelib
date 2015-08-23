@@ -13,7 +13,7 @@ describe Dromelib::Drome do
 
   describe '.new' do
     it 'should open the :docudrome by default' do
-      default_drome.name.must_equal Dromelib::Drome.open(:docudrome).name
+      _(default_drome.name).must_equal Dromelib::Drome.open(:docudrome).name
     end
   end
 
@@ -28,8 +28,8 @@ describe Dromelib::Drome do
       File.stub(:exist?, true) do
         YAML.stub(:load_file, yaml_content) do
           drome = Dromelib::Drome.open(dromename)
-          drome.drome_name.must_equal yaml_content[:drome_name]
-          drome.entry_name.must_equal yaml_content[:entry_name]
+          _(drome.drome_name).must_equal yaml_content[:drome_name]
+          _(drome.entry_name).must_equal yaml_content[:entry_name]
         end
       end
     end
@@ -42,7 +42,7 @@ describe Dromelib::Drome do
         # YAML.stub(:load_file, yaml_content, gem_filepath) do
         YAML.stub(:load_file, yaml_content) do
           drome = Dromelib::Drome.open(dromename)
-          drome.drome_name.must_equal yaml_content[:drome_name]
+          _(drome.drome_name).must_equal yaml_content[:drome_name]
         end
       end
     end
@@ -55,13 +55,13 @@ describe Dromelib::Drome do
         # YAML.stub(:load_file, yaml_content, local_filepath) do
         YAML.stub(:load_file, yaml_content) do
           drome = Dromelib::Drome.open(dromename)
-          drome.drome_name.must_equal yaml_content[:drome_name]
+          _(drome.drome_name).must_equal yaml_content[:drome_name]
         end
       end
     end
 
     it 'should keep the name of the drome as symbol' do
-      Dromelib::Drome.open('docudrome').name.must_equal :docudrome
+      _(Dromelib::Drome.open('docudrome').name).must_equal :docudrome
     end
   end
 
