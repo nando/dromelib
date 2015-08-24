@@ -70,7 +70,7 @@ describe Dromelib::Drome do
       JSON.stub(:parse, {}) do
         entry = default_drome.create_entry!('SemVer')
         entry.must_be_kind_of Dromelib::Entry
-        entry.drome.must_equal default_drome
+        _(entry.drome).must_equal default_drome
       end
     end
 
