@@ -78,7 +78,7 @@ module Dromelib
     def import!
       each_unread_email do |email|
         if (auido = _extract_auido_from_email_subject(email.subject))
-          Dromelib.drome.create_entry!(auido)
+          Dromelib.drome.create_entry!(auido, Time.parse(email.date))
           _process_attachments email
 
           email.read!

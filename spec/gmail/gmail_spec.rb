@@ -237,6 +237,7 @@ describe Dromelib::GMail do
 
     describe '"from" required methods' do
       let(:subject) { 'drome Entry example' }
+      let(:email_datetime) { 'Sun, 12 Jul 2015 23:25:06 +0200' }
   
       %w(
         each_unread_email
@@ -270,8 +271,9 @@ describe Dromelib::GMail do
                   inbox.expect(:find, [], [:unread, {from: other_address}])
                   email.expect(:subject, subject)
                   email.expect(:attachments, [])
+                  email.expect(:date, email_datetime)
   
-                  drome.expect(:create_entry!, entry, [subject])
+                  drome.expect(:create_entry!, entry, [subject, Time.parse(email_datetime)])
   
                   email.expect(:read!, false)
                   gmail.expect(:logout, true)
