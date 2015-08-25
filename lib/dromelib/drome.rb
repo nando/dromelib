@@ -28,14 +28,14 @@ module Dromelib
       @entries ||= (File.exist?(entries_json) ? _read_json : {})
     end
 
-    def create_entry!(raw_entry)
+    def create_entry!(raw_entry, timestamp = nil)
       auido = raw_entry.to_sym
       fail(EntryExistsError, raw_entry) if entries[auido]
-      @entries[auido] = Time.now.utc
+      @entries[auido] = timestamp || Time.now.utc
       File.open(entries_json, 'w') do |file|
         file.write JSON.pretty_generate(@entries)
       end
-      Dromelib::Entry.new(drome: self, auido: auido)
+      Dromelib::Entry.new(drome: self, auido: auido, timestamp: @entries[auido])
     end
 
     def entries_json

@@ -66,6 +66,8 @@ describe Dromelib::Drome do
   end
 
   describe '#create_entry!' do
+    let(:timestamp) { Time.now.utc }
+
     it 'should return an Entry instance with the right drome inside' do
       JSON.stub(:parse, {}) do
         entry = default_drome.create_entry!('SemVer')
@@ -80,6 +82,13 @@ describe Dromelib::Drome do
           default_drome.create_entry!('Ruby')
           default_drome.create_entry!('Ruby')
         end.must_raise Dromelib::Drome::EntryExistsError
+      end
+    end
+
+    it 'should accept a second parameter with the real entry creation time' do
+      JSON.stub(:parse, {}) do
+        entry = default_drome.create_entry!('Linus Torvalds', timestamp)
+        _(entry.created_at).must_equal timestamp
       end
     end
 
