@@ -26,8 +26,8 @@ describe Dromelib::Entry do
         _(@entry.created_at).must_equal timestamp
       end
 
-      it 'should let us specify #created_at as the :at value of the Hash' do
-        @entry = Dromelib::Entry.new(drome: drome, auido: auido, at: timestamp)
+      it 'should let us specify #created_at as the :timestamp value of the Hash' do
+        @entry = Dromelib::Entry.new(drome: drome, auido: auido, timestamp: timestamp)
         _(@entry.created_at).must_equal timestamp
       end
     end

@@ -9,7 +9,7 @@ module Dromelib
       first_param = args[0]
       if args.size == 1
         fail ArgumentError unless first_param.is_a?(Hash)
-        _initialize first_param[:drome], first_param[:auido], first_param[:at]
+        _initialize first_param[:drome], first_param[:auido], first_param[:timestamp]
       else
         _initialize first_param, args[1], args[2]
       end
