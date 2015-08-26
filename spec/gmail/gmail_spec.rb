@@ -47,13 +47,47 @@ describe Dromelib::GMail do
     yaml
   end
 
-  describe 'instance methods' do
-    it 'should raise UninitializedError unless Dromelib.init! has been called first' do
-      Dromelib::GMail.instance_methods.each do |method| 
+  # Dromelib.init! call check in methods without params
+  Dromelib::GMail.instance_methods.each do |method| 
+    next if Dromelib::GMail.method(method).arity > 0
+    describe "::#{method}" do
+      it 'should raise UninitializedError unless Dromelib.init! has been called first' do
         proc do
           Dromelib::GMail.send method
         end.must_raise Dromelib::UninitializedError
       end
+    end
+  end
+
+  describe '::extract_auido_from_subject(subject)' do
+    let(:subject_prefix) { 'Dromo' }
+    let(:nice_subject) { 'dromoland Rails' }
+    let(:upcased_subject) { nice_subject.upcase }
+    let(:downcased_subject) { nice_subject.downcase }
+    let(:other_subject) { 'Dolomites Mountains' }
+
+    it 'should raise UninitializedError unless Dromelib.init! has been called first' do
+      proc do
+        Dromelib::GMail.extract_auido_from_subject 'Ruby'
+      end.must_raise Dromelib::UninitializedError
+    end
+
+    it 'should extract the entry if the subject has the right prefix' do
+      Dromelib.init!
+      Dromelib::Env.stub(:value_for, subject_prefix) do
+        _(Dromelib::GMail.extract_auido_from_subject(nice_subject)).must_equal 'Rails'
+        _(Dromelib::GMail.extract_auido_from_subject(upcased_subject)).must_equal 'RAILS'
+        _(Dromelib::GMail.extract_auido_from_subject(downcased_subject)).must_equal 'rails'
+      end
+      Dromelib.end!
+    end
+
+    it 'should return nil if the subject prefix do not match' do
+      Dromelib.init!
+      Dromelib::Env.stub(:value_for, subject_prefix) do
+        _(Dromelib::GMail.extract_auido_from_subject(other_subject)).must_equal nil
+      end
+      Dromelib.end!
     end
   end
 
@@ -63,7 +97,7 @@ describe Dromelib::GMail do
     from
     subject_prefix
   ).each do |method|
-    describe ".#{method} singleton method" do
+    describe "::#{method} singleton method" do
       it 'should return its value in .dromelib.yml if not present in the environment' do
         ClimateControl.modify clean_environment do
           YAML.stub(:load_file, yaml_content) do
@@ -84,7 +118,7 @@ describe Dromelib::GMail do
     end
   end
 
-  describe '.configured? (aka "username+password requirement":)' do
+  describe '::configured? (aka "username+password requirement":)' do
     it 'should work using ENV variables' do
       YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
         ClimateControl.modify environment_vars do
@@ -133,7 +167,7 @@ describe Dromelib::GMail do
     end
   end
 
-  describe '.valid_from?' do
+  describe '::valid_from?' do
     let(:email) {'valid@email.org'}
 
     it 'should be true for a valid email' do
@@ -174,7 +208,7 @@ describe Dromelib::GMail do
       show_unread
       import!
     ).each do |method|
-      it 'should raise MissingCredentialsError if not configured' do  
+      it "::#{method} should raise MissingCredentialsError if not configured" do
         YAML.stub(:load_file, {}) do
           ClimateControl.modify clean_environment do
             proc do
@@ -186,11 +220,11 @@ describe Dromelib::GMail do
       end
     end
 
-    describe '.unread_count' do
+    describe '::unread_count' do
       let(:unread_from_A) { rand(42) }
       let(:unread_from_B) { rand(42) }
 
-      it 'should return all unread emails count if .from is not set' do
+      it 'should return all unread emails count if ::from is not set' do
         YAML.stub(:load_file, yaml_content) do
           ClimateControl.modify clean_environment do
             Dromelib.init!
@@ -235,7 +269,7 @@ describe Dromelib::GMail do
       end
     end
 
-    describe '"from" required methods' do
+    describe '::from required methods' do
       let(:subject) { 'drome Entry example' }
       let(:email_datetime) { 'Sun, 12 Jul 2015 23:25:06 +0200' }
   
@@ -245,7 +279,7 @@ describe Dromelib::GMail do
         import!
       ).each do |method|
         describe "##{method}" do
-          it 'should raise MissingFromError if "from" is not valid' do  
+          it 'should raise MissingFromError if ::from is not valid' do  
             YAML.stub(:load_file, {}) do
               ClimateControl.modify environment_vars.merge('GMAIL_FROM' => 'invalid@email') do
                 proc do
@@ -258,7 +292,7 @@ describe Dromelib::GMail do
         end
       end
     
-      describe '#import!' do
+      describe '::import!' do
         it 'should call its .read! method after reading an email' do
           YAML.stub(:load_file, yaml_with_two_froms) do
             ClimateControl.modify clean_environment do

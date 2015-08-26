@@ -68,7 +68,7 @@ module Dromelib
 
     def show_unread
       each_unread_email do |email|
-        if (auido = _extract_auido_from_email_subject(email.subject))
+        if (auido = extract_auido_from_subject(email.subject))
           puts "=> Entry: #{auido} (#{email.attachments.size} attachment/s)"
           _process_attachments email
         end
@@ -77,12 +77,24 @@ module Dromelib
 
     def import!
       each_unread_email do |email|
-        if (auido = _extract_auido_from_email_subject(email.subject))
+        if (auido = extract_auido_from_subject(email.subject))
           Dromelib.drome.create_entry!(auido, Time.parse(email.date))
           _process_attachments email
 
           email.read!
         end
+      end
+    end
+
+    def extract_auido_from_subject(subject)
+      _init_required!
+
+      decoded = Rfc2047.decode(subject).strip
+
+      if subject_prefix && (subject_prefix.size > 0)
+        decoded[/^#{subject_prefix}[a-zA-Z]* (.+)$/i, 1]
+      else
+        decoded
       end
     end
 
@@ -97,15 +109,6 @@ module Dromelib
            'Credentials not present neither env. nor Yaml' unless configured?
       fail MissingFromError,
            'Required to import only emails from there' unless valid_from?
-    end
-
-    def _extract_auido_from_email_subject(subject)
-      decoded = Rfc2047.decode(subject).strip
-      if subject_prefix && (subject_prefix.size > 0)
-        decoded[/^#{subject_prefix} (.+)$/i, 1]
-      else
-        decoded
-      end
     end
 
     def _from_or_total_unread_count(gmail)
