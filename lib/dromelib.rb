@@ -2,9 +2,10 @@
 require_relative 'dromelib/version'
 require_relative 'dromelib/config'
 require_relative 'dromelib/env'
-require_relative 'dromelib/gmail'
 require_relative 'dromelib/drome'
 require_relative 'dromelib/entry'
+require_relative 'dromelib/neo4j'
+require_relative 'dromelib/gmail'
 
 # Usage:
 #   * 1st require the lib

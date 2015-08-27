@@ -13,6 +13,7 @@ module Dromelib
     @sections = %w(
       app
       environment_vars
+      neo4j
       gmail
     )
 

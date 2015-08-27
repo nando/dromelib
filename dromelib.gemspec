@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   # spec.add_dependency 'rails', '>= 5.0.0'
   spec.add_dependency 'gmail'
   spec.add_dependency 'rfc2047'
+  spec.add_dependency 'neography'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
