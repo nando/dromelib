@@ -8,7 +8,6 @@ describe Dromelib::Env do
 
   let(:clean_environment) do
     {
-      stream_actor: nil,
       STREAM_ACTOR: nil,
       ACTIVITYSTREAM_ACTOR: nil
     }
@@ -41,7 +40,9 @@ describe Dromelib::Env do
     }
   end
 
-  describe '.name_for' do
+  let(:actor) { 'Leonardo' }
+
+  describe '::name_for' do
     it 'should use the default name on a clean environment' do
       Dromelib.init!
       ClimateControl.modify clean_environment do
@@ -59,7 +60,7 @@ describe Dromelib::Env do
     end
   end
 
-  describe '.value_for' do
+  describe '::value_for' do
     it 'should read the value of the default ENV var. on a clean environment' do
       Dromelib.init!
       ClimateControl.modify clean_environment.merge(environment_values) do
@@ -72,6 +73,26 @@ describe Dromelib::Env do
         Dromelib.init!
         ClimateControl.modify clean_environment.merge(environment_values) do
           _(Dromelib::Env.value_for(:stream_actor)).must_equal environment_values[:CUSTOM_ACTOR]
+        end
+      end
+    end
+  end
+
+  describe '::set_value_for' do
+    it 'should set the value of the default ENV variable' do
+      Dromelib.init!
+      ClimateControl.modify clean_environment.merge(environment_values) do
+        Dromelib::Env.set_value_for :stream_actor, actor
+        _(ENV[default_name[:stream_actor]]).must_equal actor
+      end
+    end
+
+    it 'should set the value of our custom ENV variable' do
+      YAML.stub(:load_file, yaml_content) do
+        Dromelib.init!
+        ClimateControl.modify clean_environment.merge(environment_values) do
+          Dromelib::Env.set_value_for :stream_actor, actor
+          _(ENV[custom_name[:stream_actor]]).must_equal actor
         end
       end
     end

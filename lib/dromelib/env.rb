@@ -15,5 +15,18 @@ module Dromelib
     def value_for(variable)
       (name = name_for(variable)) && ENV[name]
     end
+
+    # ::set_value_for changes the value of the environment variable, useful 
+    # while using the library in the console. For example, we can change the
+    # the Dromelib::GMail.from without having to change our .dromelib.yml or
+    # the shell env. variable, just typing:
+    #
+    #     > Dromelib::Env.set_value_for :gmail_from, 'friend@dromelib.org'
+    #
+    # Env values have precedence over the yaml ones, so GMail will look for
+    # emails from that address.
+    def set_value_for(variable, value)
+      (name = name_for(variable)) && ENV[name] = value
+    end
   end
 end
