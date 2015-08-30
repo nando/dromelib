@@ -133,4 +133,19 @@ describe Dromelib::Neo4j do
       end
     end
   end
+
+  describe '#neo' do
+    it 'should raise Neo4j::UnconfiguredError unless ::configured?' do
+      proc do
+        YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
+          ClimateControl.modify environment_vars do
+            Dromelib::Neo4j.stub(:configured?, false) do
+              Dromelib.init!
+              Dromelib::Neo4j.new.neo
+            end
+          end
+        end
+      end.must_raise Dromelib::Neo4j::UnconfiguredError
+    end
+  end
 end

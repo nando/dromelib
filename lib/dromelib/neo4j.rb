@@ -5,10 +5,16 @@ require_relative '../dromelib'
 module Dromelib
   # Class to send the dromes' activity to our Neo4j server throught Neography.
   class Neo4j
+    class UnconfiguredError < StandardError; end
+
     attr_reader :klass
 
     def initialize(klass = nil)
       @klass = klass || Neography::Rest
+    end
+
+    def neo
+      fail UnconfiguredError unless Neo4j.configured?
     end
 
     class << self
