@@ -66,11 +66,12 @@ describe Dromelib::Drome do
   end
 
   describe '#create_entry!' do
+    let(:auido) { 'Linus' }
     let(:timestamp) { Time.now.utc }
 
     it 'should return an Entry instance with the right drome inside' do
       JSON.stub(:parse, {}) do
-        entry = default_drome.create_entry!('SemVer')
+        entry = default_drome.create_entry!(auido)
         entry.must_be_kind_of Dromelib::Entry
         _(entry.drome).must_equal default_drome
       end
@@ -79,15 +80,15 @@ describe Dromelib::Drome do
     it 'should raise EntryExistsError if that name/auido is already present' do
       JSON.stub(:parse, {}) do
         proc do
-          default_drome.create_entry!('Ruby')
-          default_drome.create_entry!('Ruby')
+          default_drome.create_entry!(auido)
+          default_drome.create_entry!(auido)
         end.must_raise Dromelib::Drome::EntryExistsError
       end
     end
 
     it 'should accept a second parameter with the real entry creation time' do
       JSON.stub(:parse, {}) do
-        entry = default_drome.create_entry!('Linus Torvalds', timestamp)
+        entry = default_drome.create_entry!(auido, timestamp)
         _(entry.created_at).must_equal timestamp
       end
     end
@@ -97,7 +98,7 @@ describe Dromelib::Drome do
       entries_file = Minitest::Mock.new
       entries_file.expect(:write, 42, [String])
       File.stub(:open, true, entries_file) do
-        default_drome.create_entry!('SemVer')
+        default_drome.create_entry!(auido)
       end
       entries_file.verify
     end
