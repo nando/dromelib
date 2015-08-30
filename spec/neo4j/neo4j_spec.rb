@@ -194,5 +194,17 @@ describe Dromelib::Neo4j do
         end
       end.must_raise Dromelib::Neo4j::UnconfiguredError
     end
+
+    it 'should create a new klass instance using ::rest_url' do
+      neo_mock = Minitest::Mock.new
+      YAML.stub(:load_file, yaml_content) do
+        ClimateControl.modify clean_environment do
+          Dromelib.init!
+          neo_mock.expect(:new, Object.new, [Dromelib::Neo4j.rest_url])
+          Dromelib::Neo4j.new(neo_mock).neo
+        end
+      end
+      neo_mock.verify
+    end
   end
 end
