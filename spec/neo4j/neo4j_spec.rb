@@ -23,6 +23,7 @@ describe Dromelib::Neo4j do
       'NEO4J_PASSWORD' => 'env_pass'
     }
   end
+  let(:env_rest_url) { 'http://env_user:env_pass@environment.srv:11111' }
 
   let(:yaml_content) do
     {
@@ -34,6 +35,7 @@ describe Dromelib::Neo4j do
       }
     }
   end
+  let(:yml_rest_url) { 'http://yml_user:yml_pass@dromelib.yml:22222' }
 
   %w(
     host
@@ -78,7 +80,7 @@ describe Dromelib::Neo4j do
       end
     end
  
-    it 'should work using out local .dromelib.yml' do
+    it 'should work using our local .dromelib.yml' do
       YAML.stub(:load_file, yaml_content) do
         ClimateControl.modify clean_environment do
           Dromelib.init!
@@ -111,6 +113,46 @@ describe Dromelib::Neo4j do
           ClimateControl.modify env do
             Dromelib.init!
             _(Dromelib::Neo4j).wont_be :configured?
+          end
+        end
+      end
+    end
+  end
+
+  describe '::rest_url' do
+    let(:rest_url) { 'http://dromelib.yml:22222' }
+
+    it 'should work using ENV variables' do
+      YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
+        ClimateControl.modify environment_vars do
+          Dromelib.init!
+          _(Dromelib::Neo4j.rest_url).must_equal env_rest_url
+        end
+      end
+    end
+ 
+    it 'should work using our local .dromelib.yml' do
+      YAML.stub(:load_file, yaml_content) do
+        ClimateControl.modify clean_environment do
+          Dromelib.init!
+          _(Dromelib::Neo4j.rest_url).must_equal yml_rest_url
+        end
+      end
+    end
+ 
+    %w(
+      username
+      password
+    ).each do |config_key|
+      describe "without #{config_key} credential value" do
+        it 'should build the right (short) URI' do
+          yaml = yaml_content
+          yaml['neo4j'][config_key] = nil
+          YAML.stub(:load_file, yaml) do
+            ClimateControl.modify clean_environment do
+              Dromelib.init!
+              _(Dromelib::Neo4j.rest_url).must_equal rest_url
+            end
           end
         end
       end

@@ -15,6 +15,7 @@ module Dromelib
 
     def neo
       fail UnconfiguredError unless Neo4j.configured?
+      @neo ||= @klass.new(Neo4j.rest_url)
     end
 
     class << self
@@ -42,6 +43,19 @@ module Dromelib
         _init_required!
         (host && !host.empty? &&
          port && !port.empty?) || false
+      end
+
+      def credentials?
+        (username && !username.empty? &&
+         password && !password.empty?) || false
+      end
+
+      def rest_url
+        if credentials?
+          "http://#{username}:#{password}@#{host}:#{port}"
+        else
+          "http://#{host}:#{port}"
+        end
       end
 
       private
