@@ -32,24 +32,18 @@ describe Dromelib::Neo4j do
     }
   end
 
-  # Dromelib.init! call check in methods without params
-  Dromelib::Neo4j.instance_methods.each do |method| 
-    next if Dromelib::Neo4j.method(method).arity > 0
-    describe "::#{method}" do
-      it 'should raise UninitializedError unless Dromelib.init! has been called first' do
-        proc do
-          Dromelib::Neo4j.send method
-        end.must_raise Dromelib::UninitializedError
-      end
-    end
-  end
-
   %w(
     server
     username
     password
   ).each do |method|
     describe "::#{method} singleton method" do
+      it 'should raise UninitializedError unless Dromelib.init! has been called first' do
+        proc do
+          Dromelib::Neo4j.send method
+        end.must_raise Dromelib::UninitializedError
+      end
+
       it 'should return its value in .dromelib.yml if not present in the environment' do
         ClimateControl.modify clean_environment do
           YAML.stub(:load_file, yaml_content) do
@@ -113,6 +107,28 @@ describe Dromelib::Neo4j do
             Dromelib.init!
             _(Dromelib::Neo4j).wont_be :configured?
           end
+        end
+      end
+    end
+  end
+
+  describe '#klass' do
+    let(:my_klass) { :AwesomeKlass }
+
+    it 'should give us the class used to comunicate w/ the Neo4j server' do
+      YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
+        ClimateControl.modify environment_vars do
+          Dromelib.init!
+          _(Dromelib::Neo4j.new.klass.class).must_equal Class
+        end
+      end
+    end
+
+    it 'should let us inject the klass thile creating the instance' do
+      YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
+        ClimateControl.modify environment_vars do
+          Dromelib.init!
+          _(Dromelib::Neo4j.new(my_klass).klass).must_equal my_klass
         end
       end
     end
