@@ -32,9 +32,11 @@ module Dromelib
   @@initialized = false
   @@dromes = {}
  
-  def init!
+  def init!(klasses = {})
     Config.load_yaml!
     @@dromes[:docudrome] = Dromelib::Drome.new
+    @@neo4j = Dromelib::Neo4j.new(klasses[:neo4j])
+
     @@initialized = true
   end
 
@@ -50,6 +52,11 @@ module Dromelib
   def drome
     fail UninitializedError unless initialized?
     @@dromes[:docudrome]
+  end
+
+  def neo4j
+    fail UninitializedError unless initialized?
+    @@neo4j
   end
   # rubocop:enable Style/ClassVars
 

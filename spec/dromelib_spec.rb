@@ -7,11 +7,11 @@ describe Dromelib do
   end
 
   describe 'initialization' do
-    it 'should not be initialized until .init! is called' do
+    it 'should not be initialized until ::init! is called' do
       _(Dromelib).wont_be :initialized?
     end
 
-    it 'should be initialized/un-initialized after calling .init!/.end!' do
+    it 'should be initialized/un-initialized after calling ::init!/::end!' do
       Dromelib.init!
       _(Dromelib).must_be :initialized?
       Dromelib.end!
@@ -53,6 +53,26 @@ describe Dromelib do
 
     it 'should be case unsensitive' do
       _(Dromelib.load_drome('LovedRome').name).must_equal :lovedrome
+    end
+  end
+
+  describe '::neo4j' do
+    let(:my_klass) { :AwesomeKlass }
+
+    it 'should raise UninitializedError unless Dromelib.init! has been called first' do
+      proc do
+        Dromelib.neo4j
+      end.must_raise Dromelib::UninitializedError
+    end
+
+    it 'should return a Neo4j object' do
+      Dromelib.init!
+      _(Dromelib.neo4j).must_be_kind_of Dromelib::Neo4j
+    end
+
+    it 'should let the ::init! specify the klass used by the Neo4j instance' do
+      Dromelib.init! neo4j: my_klass
+      _(Dromelib.neo4j.klass).must_equal my_klass
     end
   end
 end
