@@ -8,7 +8,8 @@ describe Dromelib::Neo4j do
 
   let(:clean_environment) do
     {
-      'NEO4J_SERVER' => nil,
+      'NEO4J_HOST' => nil,
+      'NEO4J_PORT' => nil,
       'NEO4J_USERNAME' => nil,
       'NEO4J_PASSWORD' => nil
     }
@@ -16,7 +17,8 @@ describe Dromelib::Neo4j do
 
   let(:environment_vars) do
     {
-      'NEO4J_SERVER' => 'http://environment.srv:7474',
+      'NEO4J_HOST' => 'environment.srv',
+      'NEO4J_PORT' => '11111',
       'NEO4J_USERNAME' => 'env_user',
       'NEO4J_PASSWORD' => 'env_pass'
     }
@@ -25,7 +27,8 @@ describe Dromelib::Neo4j do
   let(:yaml_content) do
     {
       'neo4j' => {
-        'server' => 'http://dromelib.yml:7474', 
+        'host' => 'dromelib.yml', 
+        'port' => '22222', 
         'username' => 'yml_user',
         'password' => 'yml_pass'
       }
@@ -33,7 +36,8 @@ describe Dromelib::Neo4j do
   end
 
   %w(
-    server
+    host
+    port
     username
     password
   ).each do |method|
@@ -64,7 +68,7 @@ describe Dromelib::Neo4j do
     end
   end
 
-  describe '::configured? (only server is required)' do
+  describe '::configured? (only host & port are required)' do
     it 'should work using ENV variables' do
       YAML.stub(:load_file, Dromelib::Config.gem_yaml) do
         ClimateControl.modify environment_vars do
@@ -84,7 +88,8 @@ describe Dromelib::Neo4j do
     end
  
     %w(
-      server
+      host
+      port
     ).each do |required_param|
       it "should be false if the #{required_param} is missing" do
         yaml = yaml_content

@@ -28,14 +28,20 @@ module Dromelib
         Dromelib::Env.value_for(:neo4j_password) || Dromelib::Config.neo4j.password
       end
 
-      def server
+      def host
         _init_required!
-        Dromelib::Env.value_for(:neo4j_server) || Dromelib::Config.neo4j.server
+        Dromelib::Env.value_for(:neo4j_host) || Dromelib::Config.neo4j.host
+      end
+
+      def port
+        _init_required!
+        Dromelib::Env.value_for(:neo4j_port) || Dromelib::Config.neo4j.port
       end
 
       def configured?
         _init_required!
-        (server && !server.empty?) || false
+        (host && !host.empty? &&
+         port && !port.empty?) || false
       end
 
       private

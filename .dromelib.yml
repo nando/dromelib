@@ -1,7 +1,8 @@
 # app:
 #   name: RailsOnDrome
 environment_vars:
-  neo4j_server: NEO4J_SERVER
+  neo4j_host: NEO4J_HOST
+  neo4j_port: NEO4J_PORT
   neo4j_username: NEO4J_USERNAME
   neo4j_password: NEO4J_PASSWORD
   gmail_username: GMAIL_USERNAME
@@ -14,9 +15,10 @@ environment_vars:
   twitter_key: CONSUMER_KEY
   twitter_secret: CONSUMER_SECRET
 # neo4j:
-#  server: ourdb.stations.graphenedb.com:24789
-#  username: myusername
-#  password: mypassword
+#   host: ourdb.graphenedb.com
+#   port: 24789
+#   username: myusername
+#   password: mypassword
 # gmail:
 #   username: nando
 #   password: odnan
