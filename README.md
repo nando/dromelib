@@ -2,9 +2,9 @@
 
 Personal but transferable semantic closet library.
 
-[![Build Status](https://travis-ci.org/nando/dromelib.svg?branch=master))][travis]
+[![Build Status](https://travis-ci.org/nando/dromelib.svg?branch=master)][travis]
 
-DISCLAIMER: I'm just starting to write Dromelib trying to build a library
+:hand: DISCLAIMER :hand: I'm just starting to write Dromelib trying to build a library
 with the important Auidrome's features tested. I'm trying to write this
 README first, doing something that we could see as RDD flow (Readme Driven
 Development [0])
