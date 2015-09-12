@@ -1,3 +1,5 @@
+[travis]: https://travis-ci.org/nando/dromelib
+
 # Dromelib
 
 Personal but transferable semantic closet library.
