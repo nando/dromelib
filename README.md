@@ -8,11 +8,12 @@ Personal but transferable semantic closet library.
 
 :hand: DISCLAIMER :hand:
 
-I'm just starting to write Dromelib trying to build a library with the important
-Auidrome[0]'s features using TDD. I'm writting this README first, doing something
-that better we could be called RDD (Readme Driven Development [1]).
+I'm just starting to write Dromelib trying to build a library using TDD with the
+important features in Auidrome[0]. I'm writting this README first, doing something
+that better should be called RDD (Readme Driven Development [1] :smile:).
 
-So, be sure the specs test what you've read here if something is not working for you.
+So, **be sure the specs test what you've read** here if something is not working
+for you.
 
 [0] https://github.com/nando/auidrome
 
