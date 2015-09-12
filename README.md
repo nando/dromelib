@@ -7,6 +7,7 @@ Personal but transferable semantic closet library.
 [![Build Status](https://travis-ci.org/nando/dromelib.svg?branch=master)][travis]
 
 :hand: DISCLAIMER :hand:
+
 I'm just starting to write Dromelib trying to build a library with the important
 Auidrome[0]'s features using TDD. I'm writting this README first, doing something
 that better we could be called RDD (Readme Driven Development [1]).
@@ -14,6 +15,7 @@ that better we could be called RDD (Readme Driven Development [1]).
 So, be sure the specs test what you've read here if something is not working for you.
 
 [0] https://github.com/nando/auidrome
+
 [1] I first read this idea to Mark Rickerby http://maetl.net/talks/readme-driven-development
 
 ## Usage example from the command line
